@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project-module
+  type="WEB"
+  name="my_triton"
+  id="myeclipse.1421391662370"
+  context-root="/my_triton"
+  j2ee-spec="5.0"
+  archive="my_triton.war">
+  <attributes>
+    <attribute name="webrootdir" value="WebRoot" />
+  </attributes>
+</project-module>
+
