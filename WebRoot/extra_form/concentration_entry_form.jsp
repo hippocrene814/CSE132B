@@ -51,6 +51,54 @@
                 }
             %>
 
+            <%-- -------- UPDATE Code -------- --%>
+            <%
+                // Check if an update is requested
+                if (action != null && action.equals("update")) {
+
+                    // Begin transaction
+                    conn.setAutoCommit(false);
+
+					System.out.println("haha");
+                    // Create the prepared statement and use it to
+                    // UPDATE student values in the Students table.
+                    pstmt = conn
+                        .prepareStatement("UPDATE concentration SET con_name = ?, dep_id = ? WHERE con_id = ? ");
+
+                    pstmt.setString(1, request.getParameter("con_name"));
+                    pstmt.setInt(2, Integer.parseInt(request.getParameter("dep_id")));
+                    pstmt.setInt(3, Integer.parseInt(request.getParameter("con_id")));
+                    System.out.println(request.getParameter("con_id"));
+                    int rowCount = pstmt.executeUpdate();
+
+                    // Commit transaction
+                    conn.commit();
+                    conn.setAutoCommit(true);
+                }
+            %>
+
+            <%-- -------- DELETE Code -------- --%>
+            <%
+                // Check if a delete is requested
+                if (action != null && action.equals("delete")) {
+
+                    // Begin transaction
+                    conn.setAutoCommit(false);
+
+                    // Create the prepared statement and use it to
+                    // DELETE students FROM the Students table.
+                    pstmt = conn
+                        .prepareStatement("DELETE FROM concentration WHERE con_id = ?");
+
+                    pstmt.setInt(1, Integer.parseInt(request.getParameter("con_id")));
+                    int rowCount = pstmt.executeUpdate();
+
+                    // Commit transaction
+                    conn.commit();
+                    conn.setAutoCommit(true);
+                }
+            %>
+
             <%-- -------- SELECT Statement Code -------- --%>
             <%
                 // Create the statement
@@ -85,20 +133,31 @@
             %>
 
             <tr>
-                <%-- Get the id --%>
+                <form action="concentration_entry_form.jsp" method="POST">
+                    <input type="hidden" name="action" value="update"/>
+                    <input type="hidden" name="con_id" value="<%=rs.getInt("con_id")%>"/>
+
                 <td>
                     <%=rs.getInt("con_id")%>
                 </td>
 
-                <%-- Get the year --%>
                 <td>
-                    <%=rs.getString("con_name")%>
+                    <input value="<%=rs.getString("con_name")%>" name="con_name" size="15"/>
                 </td>
-              
-                <%-- Get the quarter --%>
+
                 <td>
-                    <%=rs.getInt("dep_id")%>
+                    <input value="<%=rs.getInt("dep_id")%>" name="dep_id" size="15"/>
                 </td>
+
+                <%-- Button --%>
+                <td><input type="submit" value="Update"></td>
+                </form>
+                <form action="concentration_entry_form.jsp" method="POST">
+                    <input type="hidden" name="action" value="delete"/>
+                    <input type="hidden" name="con_id" value="<%=rs.getInt("con_id")%>"/>
+                    <%-- Button --%>
+                <td><input type="submit" value="Delete"/></td>
+                </form>
             </tr>
             <%
                 }
