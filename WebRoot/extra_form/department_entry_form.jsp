@@ -50,6 +50,49 @@
                 }
             %>
 
+            <%-- -------- UPDATE Code -------- --%>
+            <%
+                // Check if an update is requested
+                if (action != null && action.equals("update")) {
+
+                    // Begin transaction
+                    conn.setAutoCommit(false);
+
+                    pstmt = conn
+                        .prepareStatement("UPDATE department SET department_name = ? WHERE department_id = ? ");
+
+                    pstmt.setString(1, request.getParameter("dep_name"));
+                    pstmt.setInt(2, Integer.parseInt(request.getParameter("dep_id")));
+                    int rowCount = pstmt.executeUpdate();
+
+                    // Commit transaction
+                    conn.commit();
+                    conn.setAutoCommit(true);
+                }
+            %>
+
+            <%-- -------- DELETE Code -------- --%>
+            <%
+                // Check if a delete is requested
+                if (action != null && action.equals("delete")) {
+
+                    // Begin transaction
+                    conn.setAutoCommit(false);
+
+                    // Create the prepared statement and use it to
+                    // DELETE students FROM the Students table.
+                    pstmt = conn
+                        .prepareStatement("DELETE FROM department WHERE department_id = ?");
+
+                    pstmt.setInt(1, Integer.parseInt(request.getParameter("dep_id")));
+                    int rowCount = pstmt.executeUpdate();
+
+                    // Commit transaction
+                    conn.commit();
+                    conn.setAutoCommit(true);
+                }
+            %>
+
             <%-- -------- SELECT Statement Code -------- --%>
             <%
                 // Create the statement
@@ -82,15 +125,27 @@
             %>
 
             <tr>
-                <%-- Get the id --%>
+                <form action="department_entry_form.jsp" method="POST">
+                    <input type="hidden" name="action" value="update"/>
+                    <input type="hidden" name="dep_id" value="<%=rs.getInt("department_id")%>"/>
+
                 <td>
                     <%=rs.getInt("department_id")%>
                 </td>
 
-                <%-- Get the pid --%>
                 <td>
-                    <%=rs.getString("department_name")%>
+                    <input value="<%=rs.getString("department_name")%>" name="dep_name" size="15"/>
                 </td>
+
+                <%-- Button --%>
+                <td><input type="submit" value="Update"></td>
+                </form>
+                <form action="department_entry_form.jsp" method="POST">
+                    <input type="hidden" name="action" value="delete"/>
+                    <input type="hidden" name="dep_id" value="<%=rs.getInt("department_id")%>"/>
+                    <%-- Button --%>
+                <td><input type="submit" value="Delete"/></td>
+                </form>
             </tr>
             <%
                 }

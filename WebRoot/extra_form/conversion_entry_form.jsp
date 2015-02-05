@@ -13,11 +13,11 @@
             <%@ page import="java.sql.*"%>
             <%-- -------- Open Connection Code -------- --%>
             <%
-            
+
             Connection conn = null;
             PreparedStatement pstmt = null;
             ResultSet rs = null;
-            
+
             try {
                 // Registering Postgresql JDBC driver with the DriverManager
                 Class.forName("org.postgresql.Driver");
@@ -27,7 +27,7 @@
                     "jdbc:postgresql://localhost/cse132?" +
                     "user=postgres&password=wizard");
             %>
-            
+
             <%-- -------- INSERT Code -------- --%>
             <%
                 String action = request.getParameter("action");
@@ -39,10 +39,10 @@
 
                     // Create the prepared statement and use it to
                     pstmt = conn
-                    .prepareStatement("INSERT INTO period (year, quarter) VALUES (?, ?)");
+                    .prepareStatement("INSERT INTO conversion (grade_letter, grade_num) VALUES (?, ?) ");
 
-                    pstmt.setInt(1, Integer.parseInt(request.getParameter("year")));
-                    pstmt.setString(2, request.getParameter("quarter"));
+                    pstmt.setString(1, request.getParameter("grade_letter"));
+                    pstmt.setInt(2, Integer.parseInt(request.getParameter("grade_num")));
                     int rowCount = pstmt.executeUpdate();
 
                     // Commit transaction
@@ -59,12 +59,13 @@
                     // Begin transaction
                     conn.setAutoCommit(false);
 
+                    // Create the prepared statement and use it to
+                    // UPDATE student values in the Students table.
                     pstmt = conn
-                        .prepareStatement("UPDATE period SET year = ?, quarter = ? WHERE period_id = ? ");
+                        .prepareStatement("UPDATE conversion SET grade_num = ? WHERE grade_letter = ?");
 
-                    pstmt.setInt(1, Integer.parseInt(request.getParameter("year")));
-                    pstmt.setString(2, request.getParameter("quarter"));
-                    pstmt.setInt(3, Integer.parseInt(request.getParameter("period_id")));                    
+                    pstmt.setInt(1, Integer.parseInt(request.getParameter("grade_num")));
+                    pstmt.setString(2, request.getParameter("grade_letter"));
                     int rowCount = pstmt.executeUpdate();
 
                     // Commit transaction
@@ -84,9 +85,9 @@
                     // Create the prepared statement and use it to
                     // DELETE students FROM the Students table.
                     pstmt = conn
-                        .prepareStatement("DELETE FROM period WHERE period_id = ?");
+                        .prepareStatement("DELETE FROM conversion WHERE grade_letter = ?");
 
-                    pstmt.setInt(1, Integer.parseInt(request.getParameter("period_id")));
+                    pstmt.setString(1, request.getParameter("grade_letter"));
                     int rowCount = pstmt.executeUpdate();
 
                     // Commit transaction
@@ -101,23 +102,21 @@
                 Statement statement = conn.createStatement();
 
                 // Use the created statement to SELECT
-                rs = statement.executeQuery("SELECT * FROM period");
+                rs = statement.executeQuery("SELECT * FROM conversion");
             %>
-            
+
             <!-- Add an HTML table header row to format the results -->
             <table border="1">
             <tr>
-                <th>ID</th>
-                <th>Year</th>
-            	<th>Quarter</th>
+                <th>Letter</th>
+                <th>Number</th>
             </tr>
 
             <tr>
-                <form action="period_entry_form.jsp" method="POST">
+                <form action="conversion_entry_form.jsp" method="POST">
                     <input type="hidden" name="action" value="insert"/>
-                    <th>&nbsp;</th>
-                    <th><input value="" name="year" size="10"/></th>
-                    <th><input value="" name="quarter" size="10"/></th>
+                    <th><input value="" name="grade_letter" size="10"/></th>
+                    <th><input value="" name="grade_num" size="10"/></th>
                     <th><input type="submit" value="Insert"/></th>
                 </form>
             </tr>
@@ -127,30 +126,25 @@
                 // Iterate over the ResultSet
                 while (rs.next()) {
             %>
-
             <tr>
-                <form action="period_entry_form.jsp" method="POST">
+                <form action="conversion_entry_form.jsp" method="POST">
                     <input type="hidden" name="action" value="update"/>
-                    <input type="hidden" name="period_id" value="<%=rs.getInt("period_id")%>"/>
+                    <input type="hidden" name="grade_letter" value="<%=rs.getString("grade_letter")%>"/>
 
                 <td>
-                    <%=rs.getInt("period_id")%>
+                    <input value="<%=rs.getString("grade_letter")%>" name="grade_letter" size="15" disabled/>
                 </td>
 
                 <td>
-                    <input value="<%=rs.getInt("year")%>" name="year" size="15"/>
-                </td>
-                
-                <td>
-                    <input value="<%=rs.getString("quarter")%>" name="quarter" size="15"/>
+                    <input value="<%=rs.getInt("grade_num")%>" name="grade_num" size="15"/>
                 </td>
 
                 <%-- Button --%>
                 <td><input type="submit" value="Update"></td>
                 </form>
-                <form action="period_entry_form.jsp" method="POST">
+                <form action="conversion_entry_form.jsp" method="POST">
                     <input type="hidden" name="action" value="delete"/>
-                    <input type="hidden" name="period_id" value="<%=rs.getInt("period_id")%>"/>
+                    <input type="hidden" name="grade_letter" value="<%=rs.getString("grade_letter")%>"/>
                     <%-- Button --%>
                 <td><input type="submit" value="Delete"/></td>
                 </form>

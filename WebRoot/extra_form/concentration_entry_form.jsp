@@ -131,7 +131,6 @@
                 // Iterate over the ResultSet
                 while (rs.next()) {
             %>
-
             <tr>
                 <form action="concentration_entry_form.jsp" method="POST">
                     <input type="hidden" name="action" value="update"/>
