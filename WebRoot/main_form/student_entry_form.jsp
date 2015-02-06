@@ -39,13 +39,16 @@
 
                     // Create the prepared statement and use it to
                     pstmt = conn
-                    .prepareStatement("INSERT INTO undergrad (stu_id, col_id, major, minor, is_bms) VALUES (?, ?, ?, ?, ?)");
+                    .prepareStatement("INSERT INTO student (first_name, middle_name, last_name, citizen, ssn, pre_school, pre_degree, pre_major) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
 
-                    pstmt.setInt(1, Integer.parseInt(request.getParameter("stu_id")));
-                    pstmt.setInt(2, Integer.parseInt(request.getParameter("col_id")));
-                    pstmt.setString(3, request.getParameter("major"));
-                    pstmt.setString(4, request.getParameter("minor"));
-                    pstmt.setInt(5, Integer.parseInt(request.getParameter("is_bms")));
+                    pstmt.setString(1, request.getParameter("first"));
+                    pstmt.setString(2, request.getParameter("middle"));
+                    pstmt.setString(3, request.getParameter("last"));
+                    pstmt.setString(4, request.getParameter("citizen"));
+                    pstmt.setInt(5, Integer.parseInt(request.getParameter("ssn")));
+                    pstmt.setString(6, request.getParameter("pre_school"));
+                    pstmt.setString(7, request.getParameter("pre_degree"));
+                    pstmt.setString(8, request.getParameter("pre_major"));
                     int rowCount = pstmt.executeUpdate();
 
                     // Commit transaction
@@ -63,14 +66,17 @@
                     conn.setAutoCommit(false);
 
                     pstmt = conn
-                        .prepareStatement("UPDATE undergrad SET stu_id = ?, col_id = ?, major = ?, minor = ?, is_bms = ? WHERE undergrad_id = ? ");
+                        .prepareStatement("UPDATE student SET first_name = ?, middle_name = ?, last_name = ?, citizen = ?, ssn = ?, pre_school = ?, pre_degree = ?, pre_major = ? WHERE stu_id = ? ");
 
-                    pstmt.setInt(1, Integer.parseInt(request.getParameter("stu_id")));
-                    pstmt.setInt(2, Integer.parseInt(request.getParameter("col_id")));
-                    pstmt.setString(3, request.getParameter("major"));
-                    pstmt.setString(4, request.getParameter("minor"));
-                    pstmt.setInt(5, Integer.parseInt(request.getParameter("is_bms")));
-                    pstmt.setInt(6, Integer.parseInt(request.getParameter("undergrad_id")));
+                    pstmt.setString(1, request.getParameter("first"));
+                    pstmt.setString(2, request.getParameter("middle"));
+                    pstmt.setString(3, request.getParameter("last"));
+                    pstmt.setString(4, request.getParameter("citizen"));
+                    pstmt.setInt(5, Integer.parseInt(request.getParameter("ssn")));
+                    pstmt.setString(6, request.getParameter("pre_school"));
+                    pstmt.setString(7, request.getParameter("pre_degree"));
+                    pstmt.setString(8, request.getParameter("pre_major"));
+                    pstmt.setInt(9, Integer.parseInt(request.getParameter("stu_id")));
 
                     int rowCount = pstmt.executeUpdate();
 
@@ -91,9 +97,9 @@
                     // Create the prepared statement and use it to
                     // DELETE students FROM the Students table.
                     pstmt = conn
-                        .prepareStatement("DELETE FROM undergrad WHERE undergrad_id = ?");
+                        .prepareStatement("DELETE FROM student WHERE stu_id = ?");
 
-                    pstmt.setInt(1, Integer.parseInt(request.getParameter("undergrad_id")));
+                    pstmt.setInt(1, Integer.parseInt(request.getParameter("stu_id")));
                     int rowCount = pstmt.executeUpdate();
 
                     // Commit transaction
@@ -108,29 +114,35 @@
                 Statement statement = conn.createStatement();
 
                 // Use the created statement to SELECT
-                rs = statement.executeQuery("SELECT * FROM undergrad");
+                rs = statement.executeQuery("SELECT * FROM student");
             %>
 
             <!-- Add an HTML table header row to format the results -->
             <table border="1">
             <tr>
                 <th>ID</th>
-                <th>Stu ID</th>
-                <th>College ID</th>
-                <th>Major</th>
-                <th>Minor</th>
-                <th>Is BMS</th>
+                <th>First Name</th>
+                <th>Middle Name</th>
+                <th>Last Name</th>
+                <th>citizen</th>
+                <th>ssn</th>
+                <th>Pre School</th>
+                <th>Pre Degree</th>
+                <th>Pre Major</th>
             </tr>
 
             <tr>
-                <form action="undergrad_entry_form.jsp" method="POST">
+                <form action="student_entry_form.jsp" method="POST">
                     <input type="hidden" name="action" value="insert"/>
                     <th>&nbsp;</th>
-                    <th><input value="" name="stu_id" size="15"/></th>
-                    <th><input value="" name="col_id" size="15"/></th>
-                    <th><input value="" name="major" size="15"/></th>
-                    <th><input value="" name="minor" size="15"/></th>
-                    <th><input value="" name="is_bms" size="15"/></th>
+                    <th><input value="" name="first" size="15"/></th>
+                    <th><input value="" name="middle" size="15"/></th>
+                    <th><input value="" name="last" size="15"/></th>
+                    <th><input value="" name="citizen" size="15"/></th>
+                    <th><input value="" name="ssn" size="15"/></th>
+                    <th><input value="" name="pre_school" size="15"/></th>
+                    <th><input value="" name="pre_degree" size="15"/></th>
+                    <th><input value="" name="pre_major" size="15"/></th>
                     <th><input type="submit" value="Insert"/></th>
                 </form>
             </tr>
@@ -142,39 +154,52 @@
             %>
 
             <tr>
-                <form action="undergrad_entry_form.jsp" method="POST">
+                <form action="student_entry_form.jsp" method="POST">
                     <input type="hidden" name="action" value="update"/>
-                    <input type="hidden" name="undergrad_id" value="<%=rs.getInt("undergrad_id")%>"/>
+                    <input type="hidden" name="stu_id" value="<%=rs.getInt("stu_id")%>"/>
 
                 <td>
-                    <%=rs.getInt("undergrad_id")%>
+                    <%=rs.getInt("stu_id")%>
                 </td>
 
                 <td>
-                    <input value="<%=rs.getInt("stu_id")%>" name="stu_id" size="15"/>
+                    <input value="<%=rs.getString("first_name")%>" name="first" size="15"/>
                 </td>
 
                 <td>
-                    <input value="<%=rs.getInt("col_id")%>" name="col_id" size="15"/>
+                    <input value="<%=rs.getString("middle_name")%>" name="middle" size="15"/>
                 </td>
 
                 <td>
-                    <input value="<%=rs.getString("major")%>" name="major" size="15"/>
+                    <input value="<%=rs.getString("last_name")%>" name="last" size="15"/>
                 </td>
 
                 <td>
-                    <input value="<%=rs.getString("minor")%>" name="minor" size="15"/>
+                    <input value="<%=rs.getString("citizen")%>" name="citizen" size="15"/>
                 </td>
 
                 <td>
-                    <input value="<%=rs.getInt("is_bms")%>" name="is_bms" size="15"/>
+                    <input value="<%=rs.getInt("ssn")%>" name="ssn" size="15"/>
                 </td>
+
+                <td>
+                    <input value="<%=rs.getString("pre_school")%>" name="pre_school" size="15"/>
+                </td>
+
+                <td>
+                    <input value="<%=rs.getString("pre_degree")%>" name="pre_degree" size="15"/>
+                </td>
+
+                <td>
+                    <input value="<%=rs.getString("pre_major")%>" name="pre_major" size="15"/>
+                </td>
+
                 <%-- Button --%>
                 <td><input type="submit" value="Update"></td>
                 </form>
-                <form action="undergrad_entry_form.jsp" method="POST">
+                <form action="student_entry_form.jsp" method="POST">
                     <input type="hidden" name="action" value="delete"/>
-                    <input type="hidden" name="undergrad_id" value="<%=rs.getInt("undergrad_id")%>"/>
+                    <input type="hidden" name="stu_id" value="<%=rs.getInt("stu_id")%>"/>
                     <%-- Button --%>
                 <td><input type="submit" value="Delete"/></td>
                 </form>

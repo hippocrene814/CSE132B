@@ -39,17 +39,10 @@
 
                     // Create the prepared statement and use it to
                     pstmt = conn
-                    .prepareStatement("INSERT INTO grad (first_name, middle_name, last_name, citizen, ssn, pre_school, pre_degree, pre_major, dep_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
+                    .prepareStatement("INSERT INTO grad (dep_id, stu_id) VALUES (?, ?)");
 
-                    pstmt.setString(1, request.getParameter("first"));
-                    pstmt.setString(2, request.getParameter("middle"));
-                    pstmt.setString(3, request.getParameter("last"));
-                    pstmt.setString(4, request.getParameter("citizen"));
-                    pstmt.setInt(5, Integer.parseInt(request.getParameter("ssn")));
-                    pstmt.setString(6, request.getParameter("pre_school"));
-                    pstmt.setString(7, request.getParameter("pre_degree"));
-                    pstmt.setString(8, request.getParameter("pre_major"));
-                    pstmt.setInt(9, Integer.parseInt(request.getParameter("dep_id")));
+                    pstmt.setInt(1, Integer.parseInt(request.getParameter("dep_id")));
+                    pstmt.setInt(2, Integer.parseInt(request.getParameter("stu_id")));
                     int rowCount = pstmt.executeUpdate();
 
                     // Commit transaction
@@ -67,18 +60,11 @@
                     conn.setAutoCommit(false);
 
                     pstmt = conn
-                        .prepareStatement("UPDATE grad SET first_name = ?, middle_name = ?, last_name = ?, citizen = ?, ssn = ?, pre_school = ?, pre_degree = ?, pre_major = ?, dep_id = ? WHERE stu_id = ? ");
+                        .prepareStatement("UPDATE grad SET dep_id = ?, stu_id = ? WHERE grad_id = ? ");
 
-                    pstmt.setString(1, request.getParameter("first"));
-                    pstmt.setString(2, request.getParameter("middle"));
-                    pstmt.setString(3, request.getParameter("last"));
-                    pstmt.setString(4, request.getParameter("citizen"));
-                    pstmt.setInt(5, Integer.parseInt(request.getParameter("ssn")));
-                    pstmt.setString(6, request.getParameter("pre_school"));
-                    pstmt.setString(7, request.getParameter("pre_degree"));
-                    pstmt.setString(8, request.getParameter("pre_major"));
-                    pstmt.setInt(9, Integer.parseInt(request.getParameter("dep_id")));
-                    pstmt.setInt(10, Integer.parseInt(request.getParameter("stu_id")));
+                    pstmt.setInt(1, Integer.parseInt(request.getParameter("dep_id")));
+                    pstmt.setInt(2, Integer.parseInt(request.getParameter("stu_id")));
+                    pstmt.setInt(3, Integer.parseInt(request.getParameter("grad_id")));
 
                     int rowCount = pstmt.executeUpdate();
 
@@ -99,9 +85,9 @@
                     // Create the prepared statement and use it to
                     // DELETE students FROM the Students table.
                     pstmt = conn
-                        .prepareStatement("DELETE FROM grad WHERE stu_id = ?");
+                        .prepareStatement("DELETE FROM grad WHERE grad_id = ?");
 
-                    pstmt.setInt(1, Integer.parseInt(request.getParameter("stu_id")));
+                    pstmt.setInt(1, Integer.parseInt(request.getParameter("grad_id")));
                     int rowCount = pstmt.executeUpdate();
 
                     // Commit transaction
@@ -123,30 +109,16 @@
             <table border="1">
             <tr>
                 <th>ID</th>
-                <th>First Name</th>
-                <th>Middle Name</th>
-                <th>Last Name</th>
-                <th>citizen</th>
-                <th>ssn</th>
-                <th>Pre School</th>
-                <th>Pre Degree</th>
-                <th>Pre Major</th>
                 <th>Dep ID</th>
+                <th>Stu ID</th>
             </tr>
 
             <tr>
                 <form action="grad_entry_form.jsp" method="POST">
                     <input type="hidden" name="action" value="insert"/>
                     <th>&nbsp;</th>
-                    <th><input value="" name="first" size="15"/></th>
-                    <th><input value="" name="middle" size="15"/></th>
-                    <th><input value="" name="last" size="15"/></th>
-                    <th><input value="" name="citizen" size="15"/></th>
-                    <th><input value="" name="ssn" size="15"/></th>
-                    <th><input value="" name="pre_school" size="15"/></th>
-                    <th><input value="" name="pre_degree" size="15"/></th>
-                    <th><input value="" name="pre_major" size="15"/></th>
                     <th><input value="" name="dep_id" size="15"/></th>
+                    <th><input value="" name="stu_id" size="15"/></th>
                     <th><input type="submit" value="Insert"/></th>
                 </form>
             </tr>
@@ -160,46 +132,18 @@
             <tr>
                 <form action="grad_entry_form.jsp" method="POST">
                     <input type="hidden" name="action" value="update"/>
-                    <input type="hidden" name="stu_id" value="<%=rs.getInt("stu_id")%>"/>
+                    <input type="hidden" name="grad_id" value="<%=rs.getInt("grad_id")%>"/>
 
                 <td>
-                    <%=rs.getInt("stu_id")%>
-                </td>
-
-                <td>
-                    <input value="<%=rs.getString("first_name")%>" name="first" size="15"/>
-                </td>
-
-                <td>
-                    <input value="<%=rs.getString("middle_name")%>" name="middle" size="15"/>
-                </td>
-
-                <td>
-                    <input value="<%=rs.getString("last_name")%>" name="last" size="15"/>
-                </td>
-
-                <td>
-                    <input value="<%=rs.getString("citizen")%>" name="citizen" size="15"/>
-                </td>
-
-                <td>
-                    <input value="<%=rs.getInt("ssn")%>" name="ssn" size="15"/>
-                </td>
-
-                <td>
-                    <input value="<%=rs.getString("pre_school")%>" name="pre_school" size="15"/>
-                </td>
-
-                <td>
-                    <input value="<%=rs.getString("pre_degree")%>" name="pre_degree" size="15"/>
-                </td>
-
-                <td>
-                    <input value="<%=rs.getString("pre_major")%>" name="pre_major" size="15"/>
+                    <%=rs.getInt("grad_id")%>
                 </td>
 
                 <td>
                     <input value="<%=rs.getInt("dep_id")%>" name="dep_id" size="15"/>
+                </td>
+
+                <td>
+                    <input value="<%=rs.getInt("stu_id")%>" name="stu_id" size="15"/>
                 </td>
 
                 <%-- Button --%>
@@ -207,7 +151,7 @@
                 </form>
                 <form action="grad_entry_form.jsp" method="POST">
                     <input type="hidden" name="action" value="delete"/>
-                    <input type="hidden" name="stu_id" value="<%=rs.getInt("stu_id")%>"/>
+                    <input type="hidden" name="grad_id" value="<%=rs.getInt("grad_id")%>"/>
                     <%-- Button --%>
                 <td><input type="submit" value="Delete"/></td>
                 </form>
