@@ -1,7 +1,7 @@
 <html>
 
 <body>
-<h2>Attempt 2</h2>
+<h2>Course Entry Form</h2>
 <table>
     <tr>
         <td valign="top">
@@ -118,6 +118,7 @@
                 rs = statement.executeQuery("SELECT * FROM course");
             %>
 
+            <h4>Insert</h4>
             <!-- Add an HTML table header row to format the results -->
             <table border="1">
             <tr>
@@ -139,7 +140,13 @@
                     <th><input value="" name="course_number" size="15"/></th>
                     <th><input value="" name="min_unit" size="15"/></th>
                     <th><input value="" name="max_unit" size="15"/></th>
-                    <th><input value="" name="grade_option" size="15"/></th>
+                    <th>
+                      <select name="grade_option">
+                        <option value="letter">letter</option>
+                        <option value="su">su</option>
+                        <option value="both">both</option>
+                      </select>
+                    </th>
                     <th><input value="" name="need_lab" size="15"/></th>
                     <th><input value="" name="need_consent" size="15"/></th>
                     <th><input value="" name="cate_id" size="15"/></th>
@@ -147,6 +154,21 @@
 
                     <th><input type="submit" value="Insert"/></th>
                 </form>
+            </tr>
+            </table>
+
+            <h4>Modify</h4>
+            <table border="1">
+            <tr>
+                <th>ID</th>
+                <th>Course Number</th>
+                <th>Min Unit</th>
+                <th>Max Unit</th>
+                <th>Grade Option</th>
+                <th>Need Lab</th>
+                <th>Need Consent</th>
+                <th>Category</th>
+                <th>Prerequisite</th>
             </tr>
 
             <%-- -------- Iteration Code -------- --%>

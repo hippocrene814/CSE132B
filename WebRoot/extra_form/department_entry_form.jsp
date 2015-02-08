@@ -1,7 +1,7 @@
 <html>
 
 <body>
-<h2>Attempt 2</h2>
+<h2>Department Entry Form</h2>
 <table>
     <tr>
         <td valign="top">
@@ -13,11 +13,11 @@
             <%@ page import="java.sql.*"%>
             <%-- -------- Open Connection Code -------- --%>
             <%
-            
+
             Connection conn = null;
             PreparedStatement pstmt = null;
             ResultSet rs = null;
-            
+
             try {
                 // Registering Postgresql JDBC driver with the DriverManager
                 Class.forName("org.postgresql.Driver");
@@ -27,7 +27,7 @@
                     "jdbc:postgresql://localhost/cse132?" +
                     "user=postgres&password=wizard");
             %>
-            
+
             <%-- -------- INSERT Code -------- --%>
             <%
                 String action = request.getParameter("action");
@@ -101,7 +101,7 @@
                 // Use the created statement to SELECT
                 rs = statement.executeQuery("SELECT * FROM department");
             %>
-            
+
             <!-- Add an HTML table header row to format the results -->
             <table border="1">
             <tr>

@@ -1,7 +1,7 @@
 <html>
 
 <body>
-<h2>Attempt 2</h2>
+<h2>Faculty Research Entry Form</h2>
 <table>
     <tr>
         <td valign="top">
@@ -108,8 +108,8 @@
             <table border="1">
             <tr>
                 <th>ID</th>
-                <th>fac_id</th>
-                <th>research_id</th>
+                <th>Faculty Id</th>
+                <th>Research Id</th>
             </tr>
 
             <tr>

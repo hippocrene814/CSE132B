@@ -1,7 +1,7 @@
 <html>
 
 <body>
-<h2>Attempt 2</h2>
+<h2>Conversion Table</h2>
 <table>
     <tr>
         <td valign="top">

@@ -1,7 +1,7 @@
 <html>
 
 <body>
-<h2>Attempt 2</h2>
+<h2>Undergrad Entry Form</h2>
 <table>
     <tr>
         <td valign="top">
@@ -42,7 +42,7 @@
                     .prepareStatement("INSERT INTO undergrad (stu_id, col_id, major, minor, is_bms) VALUES (?, ?, ?, ?, ?)");
 
                     pstmt.setInt(1, Integer.parseInt(request.getParameter("stu_id")));
-                    pstmt.setInt(2, Integer.parseInt(request.getParameter("col_id")));
+                    pstmt.setString(2, request.getParameter("col_id"));
                     pstmt.setString(3, request.getParameter("major"));
                     pstmt.setString(4, request.getParameter("minor"));
                     pstmt.setInt(5, Integer.parseInt(request.getParameter("is_bms")));
@@ -66,7 +66,7 @@
                         .prepareStatement("UPDATE undergrad SET stu_id = ?, col_id = ?, major = ?, minor = ?, is_bms = ? WHERE undergrad_id = ? ");
 
                     pstmt.setInt(1, Integer.parseInt(request.getParameter("stu_id")));
-                    pstmt.setInt(2, Integer.parseInt(request.getParameter("col_id")));
+                    pstmt.setString(2, request.getParameter("col_id"));
                     pstmt.setString(3, request.getParameter("major"));
                     pstmt.setString(4, request.getParameter("minor"));
                     pstmt.setInt(5, Integer.parseInt(request.getParameter("is_bms")));
@@ -115,8 +115,8 @@
             <table border="1">
             <tr>
                 <th>ID</th>
-                <th>Stu ID</th>
-                <th>College ID</th>
+                <th>Student ID</th>
+                <th>College Name</th>
                 <th>Major</th>
                 <th>Minor</th>
                 <th>Is BMS</th>
@@ -127,7 +127,16 @@
                     <input type="hidden" name="action" value="insert"/>
                     <th>&nbsp;</th>
                     <th><input value="" name="stu_id" size="15"/></th>
-                    <th><input value="" name="col_id" size="15"/></th>
+                    <th>
+                      <select name="col_id">
+                        <option value="Earl_Warren">Earl_Warren</option>
+                        <option value="Eleanor_Roosevelt">Eleanor_Roosevelt</option>
+                        <option value="John_Muir">John_Muir</option>
+                        <option value="Revelle">Revelle</option>
+                        <option value="Sixth">Sixth</option>
+                        <option value="Thurgood_Marshall">Thurgood_Marshall</option>
+                      </select>
+                    </th>
                     <th><input value="" name="major" size="15"/></th>
                     <th><input value="" name="minor" size="15"/></th>
                     <th><input value="" name="is_bms" size="15"/></th>
@@ -155,7 +164,7 @@
                 </td>
 
                 <td>
-                    <input value="<%=rs.getInt("col_id")%>" name="col_id" size="15"/>
+                    <input value="<%=rs.getString("col_id")%>" name="col_id" size="15"/>
                 </td>
 
                 <td>

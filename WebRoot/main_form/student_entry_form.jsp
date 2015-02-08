@@ -1,7 +1,7 @@
 <html>
 
 <body>
-<h2>Attempt 2</h2>
+<h2>Student Entry Form</h2>
 <table>
     <tr>
         <td valign="top">
@@ -124,8 +124,8 @@
                 <th>First Name</th>
                 <th>Middle Name</th>
                 <th>Last Name</th>
-                <th>citizen</th>
-                <th>ssn</th>
+                <th>Citizen</th>
+                <th>SSN</th>
                 <th>Pre School</th>
                 <th>Pre Degree</th>
                 <th>Pre Major</th>
@@ -138,7 +138,13 @@
                     <th><input value="" name="first" size="15"/></th>
                     <th><input value="" name="middle" size="15"/></th>
                     <th><input value="" name="last" size="15"/></th>
-                    <th><input value="" name="citizen" size="15"/></th>
+                    <th>
+                      <select name="citizen">
+                        <option value="ca">ca</option>
+                        <option value="nonca">nonca</option>
+                        <option value="foreign">foreign</option>
+                      </select>
+                    </th>
                     <th><input value="" name="ssn" size="15"/></th>
                     <th><input value="" name="pre_school" size="15"/></th>
                     <th><input value="" name="pre_degree" size="15"/></th>

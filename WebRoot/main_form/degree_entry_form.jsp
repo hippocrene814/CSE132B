@@ -1,7 +1,7 @@
 <html>
 
 <body>
-<h2>Attempt 2</h2>
+<h2>Degree Requirements' Info Submission</h2>
 <table>
     <tr>
         <td valign="top">
@@ -113,10 +113,10 @@
             <table border="1">
             <tr>
                 <th>ID</th>
-                <th>name Name</th>
-                <th>type Name</th>
-                <th>total_min_unit Name</th>
-                <th>Department</th>
+                <th>Major</th>
+                <th>Type</th>
+                <th>Total_Min_Unit</th>
+                <th>Department Id</th>
             </tr>
 
             <tr>

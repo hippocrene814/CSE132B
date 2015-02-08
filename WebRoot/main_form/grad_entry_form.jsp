@@ -1,7 +1,7 @@
 <html>
 
 <body>
-<h2>Attempt 2</h2>
+<h2>Grad Entry Form</h2>
 <table>
     <tr>
         <td valign="top">
@@ -109,16 +109,16 @@
             <table border="1">
             <tr>
                 <th>ID</th>
-                <th>Dep ID</th>
-                <th>Stu ID</th>
+                <th>Student ID</th>
+                <th>Department ID</th>
             </tr>
 
             <tr>
                 <form action="grad_entry_form.jsp" method="POST">
                     <input type="hidden" name="action" value="insert"/>
                     <th>&nbsp;</th>
-                    <th><input value="" name="dep_id" size="15"/></th>
                     <th><input value="" name="stu_id" size="15"/></th>
+                    <th><input value="" name="dep_id" size="15"/></th>
                     <th><input type="submit" value="Insert"/></th>
                 </form>
             </tr>
@@ -139,11 +139,11 @@
                 </td>
 
                 <td>
-                    <input value="<%=rs.getInt("dep_id")%>" name="dep_id" size="15"/>
+                    <input value="<%=rs.getInt("stu_id")%>" name="stu_id" size="15"/>
                 </td>
 
                 <td>
-                    <input value="<%=rs.getInt("stu_id")%>" name="stu_id" size="15"/>
+                    <input value="<%=rs.getInt("dep_id")%>" name="dep_id" size="15"/>
                 </td>
 
                 <%-- Button --%>

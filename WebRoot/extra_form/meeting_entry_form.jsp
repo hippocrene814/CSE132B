@@ -1,7 +1,7 @@
 <html>
 
 <body>
-<h2>Attempt 2</h2>
+<h2>Meeting Entry Form</h2>
 <table>
     <tr>
         <td valign="top">
@@ -133,8 +133,13 @@
                     <th><input value="" name="start_time" size="15"/></th>
                     <th><input value="" name="end_time" size="15"/></th>
                     <th><input value="" name="location" size="15"/></th>
-                    <th><input value="" name="type" size="15"/></th>
-                    <th><input value="" name="day" size="15"/></th>
+                    <th>
+                      <select name="type">
+                        <option value="lecture">lecture</option>
+                        <option value="discussion">discussion</option>
+                        <option value="lab">lab</option>
+                      </select>
+                    </th>                    <th><input value="" name="day" size="15"/></th>
                     <th><input value="" name="section_id" size="15"/></th>
 
                     <th><input type="submit" value="Insert"/></th>

@@ -1,7 +1,7 @@
 <html>
 
 <body>
-<h2>Attempt 2</h2>
+<h2>Class Entry Form</h2>
 <table>
     <tr>
         <td valign="top">
@@ -39,12 +39,12 @@
 
                     // Create the prepared statement and use it to
                     pstmt = conn
-                    .prepareStatement("INSERT INTO class (title, course_id, period_id) VALUES (?, ?, ?)");
+                    .prepareStatement("INSERT INTO class (title, course_id, year, quarter) VALUES (?, ?, ?, ?)");
 
                     pstmt.setString(1, request.getParameter("title"));
                     pstmt.setInt(2, Integer.parseInt(request.getParameter("course_id")));
-                    pstmt.setInt(3, Integer.parseInt(request.getParameter("period_id")));
-
+                    pstmt.setInt(3, Integer.parseInt(request.getParameter("year")));
+                    pstmt.setString(4, request.getParameter("quarter"));
                     int rowCount = pstmt.executeUpdate();
 
                     // Commit transaction
@@ -62,12 +62,13 @@
                     conn.setAutoCommit(false);
 
                     pstmt = conn
-                        .prepareStatement("UPDATE class SET title = ?, course_id = ?, period_id = ? WHERE class_id = ? ");
+                        .prepareStatement("UPDATE class SET title = ?, course_id = ?, year = ?, quarter = ? WHERE class_id = ? ");
 
                     pstmt.setString(1, request.getParameter("title"));
                     pstmt.setInt(2, Integer.parseInt(request.getParameter("course_id")));
-                    pstmt.setInt(3, Integer.parseInt(request.getParameter("period_id")));
-                    pstmt.setInt(4, Integer.parseInt(request.getParameter("class_id")));
+                    pstmt.setInt(3, Integer.parseInt(request.getParameter("year")));
+                    pstmt.setString(4, request.getParameter("quarter"));
+                    pstmt.setInt(5, Integer.parseInt(request.getParameter("class_id")));
 
                     int rowCount = pstmt.executeUpdate();
 
@@ -114,7 +115,8 @@
                 <th>ID</th>
                 <th>Title</th>
                 <th>Course Id</th>
-                <th>Period Id</th>
+                <th>Year</th>
+                <th>Quarter</th>
             </tr>
 
             <tr>
@@ -123,8 +125,15 @@
                     <th>&nbsp;</th>
                     <th><input value="" name="title" size="15"/></th>
                     <th><input value="" name="course_id" size="15"/></th>
-                    <th><input value="" name="period_id" size="15"/></th>
-
+                    <th><input value="" name="year" size="15"/></th>
+                    <th>
+                      <select name="quarter">
+                        <option value="spring">spring</option>
+                        <option value="summer">summer</option>
+                        <option value="fall">fall</option>
+                        <option value="winter">winter</option>
+                      </select>
+                    </th>
                     <th><input type="submit" value="Insert"/></th>
                 </form>
             </tr>
@@ -153,7 +162,11 @@
                 </td>
 
                 <td>
-                    <input value="<%=rs.getInt("period_id")%>" name="period_id" size="15"/>
+                    <input value="<%=rs.getInt("year")%>" name="year" size="15"/>
+                </td>
+
+                <td>
+                    <input value="<%=rs.getString("quarter")%>" name="quarter" size="15"/>
                 </td>
 
                 <%-- Button --%>

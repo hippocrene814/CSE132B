@@ -1,7 +1,7 @@
 <html>
 
 <body>
-<h2>Attempt 2</h2>
+<h2>Degree Category Entry Form</h2>
 <table>
     <tr>
         <td valign="top">
@@ -112,10 +112,10 @@
             <table border="1">
             <tr>
                 <th>ID</th>
-                <th>degree_id</th>
-                <th>cate_id</th>
-                <th>min_unit</th>
-                <th>min_grade</th>
+                <th>Degree Id</th>
+                <th>Category Id</th>
+                <th>Min Unit</th>
+                <th>Min Grade</th>
             </tr>
 
             <tr>

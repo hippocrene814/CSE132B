@@ -1,7 +1,7 @@
 <html>
 
 <body>
-<h2>Attempt 2</h2>
+<h2>Degree Concentration Entry Form</h2>
 <table>
     <tr>
         <td valign="top">
@@ -110,9 +110,9 @@
             <table border="1">
             <tr>
                 <th>ID</th>
-                <th>degree_id</th>
-                <th>con_id</th>
-                <th>min_grade</th>
+                <th>Degree Id</th>
+                <th>Concentration Id</th>
+                <th>Min Grade</th>
             </tr>
 
             <tr>

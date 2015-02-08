@@ -1,7 +1,7 @@
 <html>
 
 <body>
-<h2>Attempt 2</h2>
+<h2>Review Session Info Submission</h2>
 <table>
     <tr>
         <td valign="top">

@@ -1,7 +1,7 @@
 <html>
 
 <body>
-<h2>Attempt 2</h2>
+<h2>Section Entry Form</h2>
 <table>
     <tr>
         <td valign="top">
@@ -112,9 +112,9 @@
             <table border="1">
             <tr>
                 <th>ID</th>
-                <th>Section Limit</th>
+                <th>Number Limit</th>
                 <th>Class Id</th>
-                <th>Fac Id</th>
+                <th>Faculty Id</th>
             </tr>
 
             <tr>

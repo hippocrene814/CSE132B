@@ -1,7 +1,7 @@
 <html>
 
 <body>
-<h2>Attempt 2</h2>
+<h2>Faculty Entry Form</h2>
 <table>
     <tr>
         <td valign="top">
@@ -129,8 +129,14 @@
                     <th><input value="" name="first" size="15"/></th>
                     <th><input value="" name="middle" size="15"/></th>
                     <th><input value="" name="last" size="15"/></th>
-                    <th><input value="" name="title" size="15"/></th>
-                    <th><input value="" name="dep_id" size="15"/></th>
+                    <th>
+                      <select name="title">
+                        <option value="lecturer">lecturer</option>
+                        <option value="assistant_professor">assistant_professor</option>
+                        <option value="associate_professor">associate_professor</option>
+                        <option value="professor">professor</option>
+                      </select>
+                    </th>                    <th><input value="" name="dep_id" size="15"/></th>
                     <th><input type="submit" value="Insert"/></th>
                 </form>
             </tr>

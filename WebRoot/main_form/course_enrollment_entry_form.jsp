@@ -1,7 +1,7 @@
 <html>
 
 <body>
-<h2>Attempt 2</h2>
+<h2>Course Enrollment</h2>
 <table>
     <tr>
         <td valign="top">
@@ -39,11 +39,11 @@
 
                     // Create the prepared statement and use it to
                     pstmt = conn
-                    .prepareStatement("INSERT INTO student_section (is_enroll, unit, letter_su, grade, period_id, stu_id, section_id) VALUES (?, ?, ?, 0, 5, ?, ?)");
+                    .prepareStatement("INSERT INTO student_section (is_enroll, unit, letter_su, grade, year, quarter, stu_id, section_id) VALUES (?, ?, ?, 'na', 2015, 'winter', ?, ?)");
 
                     pstmt.setInt(1, Integer.parseInt(request.getParameter("is_enroll")));
                     pstmt.setInt(2, Integer.parseInt(request.getParameter("unit")));
-                    pstmt.setInt(3, Integer.parseInt(request.getParameter("letter_su")));
+                    pstmt.setString(3, request.getParameter("letter_su"));
                     pstmt.setInt(4, Integer.parseInt(request.getParameter("stu_id")));
                     pstmt.setInt(5, Integer.parseInt(request.getParameter("section_id")));
                     int rowCount = pstmt.executeUpdate();
@@ -67,7 +67,7 @@
 
                     pstmt.setInt(1, Integer.parseInt(request.getParameter("is_enroll")));
                     pstmt.setInt(2, Integer.parseInt(request.getParameter("unit")));
-                    pstmt.setInt(3, Integer.parseInt(request.getParameter("letter_su")));
+                    pstmt.setString(3, request.getParameter("letter_su"));
                     pstmt.setInt(4, Integer.parseInt(request.getParameter("stu_id")));
                     pstmt.setInt(5, Integer.parseInt(request.getParameter("section_id")));
                     pstmt.setInt(6, Integer.parseInt(request.getParameter("ss_id")));
@@ -107,20 +107,19 @@
                 Statement statement = conn.createStatement();
 
                 // Use the created statement to SELECT
-                rs = statement.executeQuery("SELECT * FROM student_section WHERE period_id = 5");
+                rs = statement.executeQuery("SELECT * FROM student_section WHERE year = 2015 AND quarter = 'winter'");
             %>
 
+            <h4>Insert</h4>
             <!-- Add an HTML table header row to format the results -->
             <table border="1">
             <tr>
                 <th>ID</th>
-                <th>is_enroll</th>
-                <th>unit</th>
-                <th>letter_su</th>
-                <th>grade</th>
-                <th>period_id</th>
-                <th>stu_id</th>
-                <th>section_id</th>
+                <th>Enroll_Waitlist</th>
+                <th>Unit</th>
+                <th>Eetter_Su</th>
+                <th>Student Id</th>
+                <th>Section Id</th>
             </tr>
 
             <tr>
@@ -129,15 +128,34 @@
                     <th>&nbsp;</th>
                     <th><input value="" name="is_enroll" size="10"/></th>
                     <th><input value="" name="unit" size="10"/></th>
-                    <th><input value="" name="letter_su" size="10"/></th>
-                    <th>&nbsp;</th>
-                    <th>&nbsp;</th>
+                    <th>
+                      <select name="letter_su">
+                        <option value="letter">letter</option>
+                        <option value="su">su</option>
+                      </select>
+                    </th>
                     <th><input value="" name="stu_id" size="10"/></th>
                     <th><input value="" name="section_id" size="10"/></th>
                     <th><input type="submit" value="Insert"/></th>
                 </form>
             </tr>
+            </table>
 
+            <hr>
+
+            <h4>Modify</h4>
+            <table border="1">
+            <tr>
+                <th>ID</th>
+                <th>Enroll_Waitlist</th>
+                <th>Unit</th>
+                <th>Letter_Su</th>
+                <th>Grade</th>
+                <th>Year</th>
+                <th>Quarter</th>
+                <th>Student Id</th>
+                <th>Section Id</th>
+            </tr>
             <%-- -------- Iteration Code -------- --%>
             <%
                 // Iterate over the ResultSet
@@ -162,15 +180,19 @@
                 </td>
 
                 <td>
-                    <input value="<%=rs.getInt("letter_su")%>" name="letter_su" size="15"/>
+                    <input value="<%=rs.getString("letter_su")%>" name="letter_su" size="15"/>
                 </td>
 
                 <td>
-                    <%=rs.getInt("grade")%>
+                    <%=rs.getString("grade")%>
                 </td>
 
                 <td>
-                    <%=rs.getInt("period_id")%>
+                    <%=rs.getInt("year")%>
+                </td>
+
+                <td>
+                    <%=rs.getString("quarter")%>
                 </td>
 
                 <td>

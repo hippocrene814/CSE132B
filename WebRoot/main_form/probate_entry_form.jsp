@@ -1,7 +1,7 @@
 <html>
 
 <body>
-<h2>Attempt 2</h2>
+<h2>Probation Info Submission</h2>
 <table>
     <tr>
         <td valign="top">
@@ -39,11 +39,12 @@
 
                     // Create the prepared statement and use it to
                     pstmt = conn
-                    .prepareStatement("INSERT INTO probate (stu_id, period_id, reason) VALUES (?, ?, ?)");
+                    .prepareStatement("INSERT INTO probate (stu_id, year, quarter, reason) VALUES (?, ?, ?, ?)");
 
                     pstmt.setInt(1, Integer.parseInt(request.getParameter("stu_id")));
-                    pstmt.setInt(2, Integer.parseInt(request.getParameter("period_id")));
-                    pstmt.setString(3, request.getParameter("reason"));
+                    pstmt.setInt(2, Integer.parseInt(request.getParameter("year")));
+                    pstmt.setString(3, request.getParameter("quarter"));
+                    pstmt.setString(4, request.getParameter("reason"));
                     int rowCount = pstmt.executeUpdate();
 
                     // Commit transaction
@@ -61,12 +62,13 @@
                     conn.setAutoCommit(false);
 
                     pstmt = conn
-                        .prepareStatement("UPDATE probate SET stu_id = ?, period_id = ?, reason = ? WHERE prob_id = ? ");
+                        .prepareStatement("UPDATE probate SET stu_id = ?, year = ?, quarter = ?, reason = ? WHERE prob_id = ? ");
 
                     pstmt.setInt(1, Integer.parseInt(request.getParameter("stu_id")));
-                    pstmt.setInt(2, Integer.parseInt(request.getParameter("period_id")));
-                    pstmt.setString(3, request.getParameter("reason"));
-                    pstmt.setInt(4, Integer.parseInt(request.getParameter("prob_id")));
+                    pstmt.setInt(2, Integer.parseInt(request.getParameter("year")));
+                    pstmt.setString(3, request.getParameter("quarter"));
+                    pstmt.setString(4, request.getParameter("reason"));
+                    pstmt.setInt(5, Integer.parseInt(request.getParameter("prob_id")));
                     int rowCount = pstmt.executeUpdate();
 
                     // Commit transaction
@@ -110,9 +112,10 @@
             <table border="1">
             <tr>
                 <th>ID</th>
-                <th>stu_id</th>
-                <th>period_id</th>
-                <th>reason</th>
+                <th>Student Id</th>
+                <th>Year</th>
+                <th>Quarter</th>
+                <th>Reason</th>
             </tr>
 
             <tr>
@@ -120,7 +123,15 @@
                     <input type="hidden" name="action" value="insert"/>
                     <th>&nbsp;</th>
                     <th><input value="" name="stu_id" size="10"/></th>
-                    <th><input value="" name="period_id" size="10"/></th>
+                    <th><input value="" name="year" size="10"/></th>
+                    <th>
+                      <select name="quarter">
+                        <option value="spring">spring</option>
+                        <option value="summer">summer</option>
+                        <option value="fall">fall</option>
+                        <option value="winter">winter</option>
+                      </select>
+                    </th>
                     <th><input value="" name="reason" size="10"/></th>
                     <th><input type="submit" value="Insert"/></th>
                 </form>
@@ -146,7 +157,11 @@
                 </td>
 
                 <td>
-                    <input value="<%=rs.getInt("period_id")%>" name="period_id" size="15"/>
+                    <input value="<%=rs.getInt("year")%>" name="year" size="15"/>
+                </td>
+
+                <td>
+                    <input value="<%=rs.getString("quarter")%>" name="quarter" size="15"/>
                 </td>
 
                 <td>
