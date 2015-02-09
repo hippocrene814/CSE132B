@@ -111,7 +111,7 @@
                 Statement statement = conn.createStatement();
 
                 // Use the created statement to SELECT
-                rs = statement.executeQuery("SELECT * FROM review");
+                rs = statement.executeQuery("SELECT * FROM review ORDER BY review_id");
             %>
 
             <!-- Add an HTML table header row to format the results -->

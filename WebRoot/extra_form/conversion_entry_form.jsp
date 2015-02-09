@@ -102,7 +102,7 @@
                 Statement statement = conn.createStatement();
 
                 // Use the created statement to SELECT
-                rs = statement.executeQuery("SELECT * FROM conversion");
+                rs = statement.executeQuery("SELECT * FROM conversion ORDER BY grade_letter");
             %>
 
             <!-- Add an HTML table header row to format the results -->

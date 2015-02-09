@@ -111,7 +111,7 @@
                 Statement statement = conn.createStatement();
 
                 // Use the created statement to SELECT
-                rs = statement.executeQuery("SELECT * FROM student_section WHERE year <> 2015 AND quarter <> 'winter'");
+                rs = statement.executeQuery("SELECT * FROM student_section WHERE year <> 2015 AND quarter <> 'winter' ORDER BY ss_id");
             %>
 
             <h4>Insert</h4>
