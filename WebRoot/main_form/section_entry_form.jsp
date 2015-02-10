@@ -112,18 +112,18 @@
             <table border="1">
             <tr>
                 <th>ID</th>
-                <th>Number Limit</th>
                 <th>Class Id</th>
                 <th>Faculty Id</th>
+                <th>Number Limit</th>
             </tr>
 
             <tr>
                 <form action="section_entry_form.jsp" method="POST">
                     <input type="hidden" name="action" value="insert"/>
                     <th>&nbsp;</th>
-                    <th><input value="" name="section_limit" size="15"/></th>
                     <th><input value="" name="class_id" size="15"/></th>
                     <th><input value="" name="fac_id" size="15"/></th>
+                    <th><input value="" name="section_limit" size="15"/></th>
 
                     <th><input type="submit" value="Insert"/></th>
                 </form>
@@ -145,15 +145,15 @@
                 </td>
 
                 <td>
-                    <input value="<%=rs.getInt("section_limit")%>" name="section_limit" size="15"/>
-                </td>
-
-                <td>
                     <input value="<%=rs.getInt("class_id")%>" name="class_id" size="15"/>
                 </td>
 
                 <td>
                     <input value="<%=rs.getInt("fac_id")%>" name="fac_id" size="15"/>
+                </td>
+
+                <td>
+                    <input value="<%=rs.getInt("section_limit")%>" name="section_limit" size="15"/>
                 </td>
 
                 <%-- Button --%>

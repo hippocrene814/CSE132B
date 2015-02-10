@@ -108,16 +108,16 @@
             <table border="1">
             <tr>
                 <th>ID</th>
-                <th>Faculty Id</th>
                 <th>Student Id</th>
+                <th>Faculty Id</th>
             </tr>
 
             <tr>
                 <form action="thesis_entry_form.jsp" method="POST">
                     <input type="hidden" name="action" value="insert"/>
                     <th>&nbsp;</th>
-                    <th><input value="" name="fac_id" size="10"/></th>
                     <th><input value="" name="stu_id" size="10"/></th>
+                    <th><input value="" name="fac_id" size="10"/></th>
                     <th><input type="submit" value="Insert"/></th>
                 </form>
             </tr>
@@ -138,11 +138,11 @@
                 </td>
 
                 <td>
-                    <input value="<%=rs.getInt("fac_id")%>" name="fac_id" size="15"/>
+                    <input value="<%=rs.getInt("stu_id")%>" name="stu_id" size="15"/>
                 </td>
 
                 <td>
-                    <input value="<%=rs.getInt("stu_id")%>" name="stu_id" size="15"/>
+                    <input value="<%=rs.getInt("fac_id")%>" name="fac_id" size="15"/>
                 </td>
 
                 <%-- Button --%>

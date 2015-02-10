@@ -38,8 +38,7 @@
                     conn.setAutoCommit(false);
 
                     // Create the prepared statement and use it to
-                    pstmt = conn
-                    .prepareStatement("INSERT INTO faculty_research (fac_id, research_id) VALUES (?, ?)");
+                    pstmt = conn.prepareStatement("INSERT INTO faculty_research (fac_id, research_id) VALUES (?, ?)");
 
                     pstmt.setInt(1, Integer.parseInt(request.getParameter("fac_id")));
                     pstmt.setInt(2, Integer.parseInt(request.getParameter("research_id")));
