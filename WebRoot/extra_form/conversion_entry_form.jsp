@@ -42,7 +42,8 @@
                     .prepareStatement("INSERT INTO conversion (grade_letter, grade_num) VALUES (?, ?) ");
 
                     pstmt.setString(1, request.getParameter("grade_letter"));
-                    pstmt.setInt(2, Integer.parseInt(request.getParameter("grade_num")));
+/*                     pstmt.setInt(2, Integer.parseInt(request.getParameter("grade_num")));
+ */                    pstmt.setFloat(2, Float.parseFloat(request.getParameter("grade_num")));
                     int rowCount = pstmt.executeUpdate();
 
                     // Commit transaction
@@ -64,7 +65,7 @@
                     pstmt = conn
                         .prepareStatement("UPDATE conversion SET grade_num = ? WHERE grade_letter = ?");
 
-                    pstmt.setInt(1, Integer.parseInt(request.getParameter("grade_num")));
+                    pstmt.setFloat(1, Float.parseFloat(request.getParameter("grade_num")));
                     pstmt.setString(2, request.getParameter("grade_letter"));
                     int rowCount = pstmt.executeUpdate();
 
@@ -136,7 +137,7 @@
                 </td>
 
                 <td>
-                    <input value="<%=rs.getInt("grade_num")%>" name="grade_num" size="15"/>
+                    <input value="<%=rs.getFloat("grade_num")%>" name="grade_num" size="15"/>
                 </td>
 
                 <%-- Button --%>
