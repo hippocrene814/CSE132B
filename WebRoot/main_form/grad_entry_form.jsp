@@ -38,11 +38,14 @@
                     conn.setAutoCommit(false);
 
                     // Create the prepared statement and use it to
+//                    pstmt = conn
+//                    .prepareStatement("INSERT INTO grad (dep_id, stu_id) VALUES (?, ?)");
                     pstmt = conn
-                    .prepareStatement("INSERT INTO grad (dep_id, stu_id) VALUES (?, ?)");
+                    .prepareStatement("INSERT INTO grad (dep_id, stu_id) SELECT ?, ? WHERE NOT EXISTS (SELECT * FROM undergrad u WHERE u.stu_id = ?)");
 
                     pstmt.setInt(1, Integer.parseInt(request.getParameter("dep_id")));
                     pstmt.setInt(2, Integer.parseInt(request.getParameter("stu_id")));
+                    pstmt.setInt(3, Integer.parseInt(request.getParameter("stu_id")));
                     int rowCount = pstmt.executeUpdate();
 
                     // Commit transaction
