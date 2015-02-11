@@ -118,29 +118,30 @@
             <table border="1">
             <tr>
                 <th>ID</th>
+                <th>Section Id</th>
                 <th>Start Time</th>
                 <th>End Time</th>
-                <th>Location</th>
                 <th>Type</th>
                 <th>Day</th>
-                <th>Section Id</th>
+                <th>Location</th>
             </tr>
 
             <tr>
                 <form action="meeting_entry_form.jsp" method="POST">
                     <input type="hidden" name="action" value="insert"/>
                     <th>&nbsp;</th>
-                    <th><input value="" name="start_time" size="15"/></th>
-                    <th><input value="" name="end_time" size="15"/></th>
-                    <th><input value="" name="location" size="15"/></th>
+                    <th><input value="" name="section_id" size="15"/></th>
+                    <th><input type="time" value="" name="start_time" size="15"/></th>
+                    <th><input type="time" value="" name="end_time" size="15"/></th>
                     <th>
                       <select name="type">
                         <option value="lecture">lecture</option>
                         <option value="discussion">discussion</option>
                         <option value="lab">lab</option>
                       </select>
-                    </th>                    <th><input value="" name="day" size="15"/></th>
-                    <th><input value="" name="section_id" size="15"/></th>
+                    </th>
+                    <th><input value="" name="day" size="15"/></th>
+                    <th><input value="" name="location" size="15"/></th>
 
                     <th><input type="submit" value="Insert"/></th>
                 </form>
@@ -162,15 +163,15 @@
                 </td>
 
                 <td>
-                    <input value="<%=rs.getString("start_time")%>" name="start_time" size="15"/>
+                    <input value="<%=rs.getInt("section_id")%>" name="section_id" size="15"/>
                 </td>
 
                 <td>
-                    <input value="<%=rs.getString("end_time")%>" name="end_time" size="15"/>
+                    <input type="time" value="<%=rs.getString("start_time")%>" name="start_time" size="15"/>
                 </td>
 
                 <td>
-                    <input value="<%=rs.getString("location")%>" name="location" size="15"/>
+                    <input type="time" value="<%=rs.getString("end_time")%>" name="end_time" size="15"/>
                 </td>
 
                 <td>
@@ -182,7 +183,7 @@
                 </td>
 
                 <td>
-                    <input value="<%=rs.getInt("section_id")%>" name="section_id" size="15"/>
+                    <input value="<%=rs.getString("location")%>" name="location" size="15"/>
                 </td>
 
                 <%-- Button --%>
