@@ -124,7 +124,14 @@
                     <input type="hidden" name="action" value="insert"/>
                     <th>&nbsp;</th>
                     <th><input value="" name="name" size="15"/></th>
-                    <th><input value="" name="type" size="15"/></th>
+                    <th>
+                      <select name="type">
+                        <option value="be">BE</option>
+                        <option value="ms">MS</option>
+                        <option value="ma">MA</option>
+                        <option value="me">ME</option>
+                      </select>
+                    </th>
                     <th><input value="" name="total_min_unit" size="15"/></th>
                     <th><input value="" name="dep_id" size="15"/></th>
                     <th><input type="submit" value="Insert"/></th>

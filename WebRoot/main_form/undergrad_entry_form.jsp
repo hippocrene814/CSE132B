@@ -108,7 +108,7 @@
                 Statement statement = conn.createStatement();
 
                 // Use the created statement to SELECT
-                rs = statement.executeQuery("SELECT * FROM undergrad ORDER BY undergrad_id");
+                rs = statement.executeQuery("SELECT * FROM undergrad u, student s WHERE u.stu_id = s.stu_id ORDER BY undergrad_id");
             %>
 
             <!-- Add an HTML table header row to format the results -->
@@ -143,7 +143,20 @@
                     <th><input type="submit" value="Insert"/></th>
                 </form>
             </tr>
-
+            </table>
+            <hr>
+            <table border="1">
+            <tr>
+                <th>ID</th>
+                <th>Student ID</th>
+                <th>College Name</th>
+                <th>Major</th>
+                <th>Minor</th>
+                <th>Is BMS</th>
+                <th>First Name</th>
+                <th>Middle Name</th>
+                <th>Last Name</th>
+            </tr>
             <%-- -------- Iteration Code -------- --%>
             <%
                 // Iterate over the ResultSet
@@ -177,6 +190,18 @@
 
                 <td>
                     <input value="<%=rs.getInt("is_bms")%>" name="is_bms" size="15"/>
+                </td>
+
+                <td>
+                    <%=rs.getString("first_name")%>
+                </td>
+
+                <td>
+                    <%=rs.getString("middle_name")%>
+                </td>
+
+                <td>
+                    <%=rs.getString("last_name")%>
                 </td>
                 <%-- Button --%>
                 <td><input type="submit" value="Update"></td>
