@@ -39,15 +39,13 @@
 
                     // Create the prepared statement and use it to
                     pstmt = conn
-                    .prepareStatement("INSERT INTO student_section (is_enroll, unit, letter_su, grade, year, quarter, stu_id, section_id) VALUES (1, ?, ?, ?, ?, ?, ?, ?)");
+                    .prepareStatement("INSERT INTO student_section (is_enroll, unit, letter_su, grade, stu_id, section_id) VALUES (1, ?, ?, ?, ?, ?)");
 
                     pstmt.setInt(1, Integer.parseInt(request.getParameter("unit")));
                     pstmt.setString(2, request.getParameter("letter_su"));
                     pstmt.setString(3, request.getParameter("grade"));
-                    pstmt.setInt(4, Integer.parseInt(request.getParameter("year")));
-                    pstmt.setString(5, request.getParameter("quarter"));
-                    pstmt.setInt(6, Integer.parseInt(request.getParameter("stu_id")));
-                    pstmt.setInt(7, Integer.parseInt(request.getParameter("section_id")));
+                    pstmt.setInt(4, Integer.parseInt(request.getParameter("stu_id")));
+                    pstmt.setInt(5, Integer.parseInt(request.getParameter("section_id")));
                     int rowCount = pstmt.executeUpdate();
 
                     // Commit transaction
@@ -65,16 +63,14 @@
                     conn.setAutoCommit(false);
 
                     pstmt = conn
-                        .prepareStatement("UPDATE student_section SET unit = ?, letter_su = ?, grade = ?, year = ?, quarter = ?, stu_id = ?, section_id = ? WHERE ss_id = ? ");
+                        .prepareStatement("UPDATE student_section SET unit = ?, letter_su = ?, grade = ?, stu_id = ?, section_id = ? WHERE ss_id = ? ");
 
                     pstmt.setInt(1, Integer.parseInt(request.getParameter("unit")));
                     pstmt.setString(2, request.getParameter("letter_su"));
                     pstmt.setString(3, request.getParameter("grade"));
-                    pstmt.setInt(4, Integer.parseInt(request.getParameter("year")));
-                    pstmt.setString(5, request.getParameter("quarter"));
-                    pstmt.setInt(6, Integer.parseInt(request.getParameter("stu_id")));
-                    pstmt.setInt(7, Integer.parseInt(request.getParameter("section_id")));
-                    pstmt.setInt(8, Integer.parseInt(request.getParameter("ss_id")));
+                    pstmt.setInt(4, Integer.parseInt(request.getParameter("stu_id")));
+                    pstmt.setInt(5, Integer.parseInt(request.getParameter("section_id")));
+                    pstmt.setInt(6, Integer.parseInt(request.getParameter("ss_id")));
                     int rowCount = pstmt.executeUpdate();
 
                     // Commit transaction
@@ -111,7 +107,7 @@
                 Statement statement = conn.createStatement();
 
                 // Use the created statement to SELECT
-                rs = statement.executeQuery("SELECT * FROM student_section WHERE year <> 2015 AND quarter <> 'winter' ORDER BY ss_id");
+                rs = statement.executeQuery("SELECT * FROM student_section ss, section s, class c WHERE ss.section_id = s.section_id AND s.class_id = c.class_id AND c.year <> 2015 AND c.quarter <> 'winter' ORDER BY ss.ss_id");
             %>
 
             <h4>Insert</h4>
@@ -122,8 +118,6 @@
                 <th>Unit</th>
                 <th>Letter_Su</th>
                 <th>Grade</th>
-                <th>Year</th>
-                <th>Quarter</th>
                 <th>Student Id</th>
                 <th>Section Id</th>
             </tr>
@@ -150,15 +144,6 @@
                         <option value="na">na</option>
                       </select>
                     </th>
-                    <th><input value="" name="year" size="10"/></th>
-                    <th>
-                      <select name="quarter">
-                        <option value="spring">spring</option>
-                        <option value="summer">summer</option>
-                        <option value="fall">fall</option>
-                        <option value="winter">winter</option>
-                      </select>
-                    </th>
                     <th><input value="" name="stu_id" size="10"/></th>
                     <th><input value="" name="section_id" size="10"/></th>
                     <th><input type="submit" value="Insert"/></th>
@@ -178,6 +163,7 @@
                 <th>Quarter</th>
                 <th>Student Id</th>
                 <th>Section Id</th>
+                <th>Class Name</th>
             </tr>
 
             <%-- -------- Iteration Code -------- --%>
@@ -200,31 +186,35 @@
                 </td>
 
                 <td>
-                    <input value="<%=rs.getInt("unit")%>" name="unit" size="15"/>
+                    <input value="<%=rs.getInt("unit")%>" name="unit" size="10"/>
                 </td>
 
                 <td>
-                    <input value="<%=rs.getString("letter_su")%>" name="letter_su" size="15"/>
+                    <input value="<%=rs.getString("letter_su")%>" name="letter_su" size="10"/>
                 </td>
 
                 <td>
-                    <input value="<%=rs.getString("grade")%>" name="grade" size="15"/>
+                    <input value="<%=rs.getString("grade")%>" name="grade" size="10"/>
                 </td>
 
                 <td>
-                    <input value="<%=rs.getInt("year")%>" name="year" size="15"/>
+                    <input value="<%=rs.getInt("year")%>" name="year" size="10"/>
                 </td>
 
                 <td>
-                    <input value="<%=rs.getString("quarter")%>" name="quarter" size="15"/>
+                    <input value="<%=rs.getString("quarter")%>" name="quarter" size="10"/>
                 </td>
 
                 <td>
-                    <input value="<%=rs.getInt("stu_id")%>" name="stu_id" size="15"/>
+                    <input value="<%=rs.getInt("stu_id")%>" name="stu_id" size="10"/>
                 </td>
 
                 <td>
-                    <input value="<%=rs.getInt("section_id")%>" name="section_id" size="15"/>
+                    <input value="<%=rs.getInt("section_id")%>" name="section_id" size="10"/>
+                </td>
+
+                <td>
+                    <%=rs.getString("title")%>
                 </td>
                 <%-- Button --%>
                 <td><input type="submit" value="Update"></td>

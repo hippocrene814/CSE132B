@@ -39,10 +39,12 @@
 
                     // Create the prepared statement and use it to
                     pstmt = conn
-                    .prepareStatement("INSERT INTO thesis (fac_id, stu_id) VALUES (?, ?)");
+                    .prepareStatement("INSERT INTO thesis (stu_id, fac1_id, fac2_id, fac3_id) VALUES (?, ?, ?, ?)");
 
-                    pstmt.setInt(1, Integer.parseInt(request.getParameter("fac_id")));
-                    pstmt.setInt(2, Integer.parseInt(request.getParameter("stu_id")));
+                    pstmt.setInt(1, Integer.parseInt(request.getParameter("stu_id")));
+                    pstmt.setInt(2, Integer.parseInt(request.getParameter("fac1_id")));
+                    pstmt.setInt(3, Integer.parseInt(request.getParameter("fac2_id")));
+                    pstmt.setInt(4, Integer.parseInt(request.getParameter("fac3_id")));
                     int rowCount = pstmt.executeUpdate();
 
                     // Commit transaction
@@ -60,11 +62,13 @@
                     conn.setAutoCommit(false);
 
                     pstmt = conn
-                        .prepareStatement("UPDATE thesis SET fac_id = ?, stu_id = ? WHERE th_id = ? ");
+                        .prepareStatement("UPDATE thesis SET stu_id = ?, fac1_id = ?, fac2_id = ?, fac3_id = ? WHERE th_id = ? ");
 
-                    pstmt.setInt(1, Integer.parseInt(request.getParameter("fac_id")));
-                    pstmt.setInt(2, Integer.parseInt(request.getParameter("stu_id")));
-                    pstmt.setInt(3, Integer.parseInt(request.getParameter("th_id")));
+                    pstmt.setInt(1, Integer.parseInt(request.getParameter("stu_id")));
+                    pstmt.setInt(2, Integer.parseInt(request.getParameter("fac1_id")));
+                    pstmt.setInt(3, Integer.parseInt(request.getParameter("fac2_id")));
+                    pstmt.setInt(4, Integer.parseInt(request.getParameter("fac3_id")));
+                    pstmt.setInt(5, Integer.parseInt(request.getParameter("th_id")));
                     int rowCount = pstmt.executeUpdate();
 
                     // Commit transaction
@@ -109,7 +113,9 @@
             <tr>
                 <th>ID</th>
                 <th>Student Id</th>
-                <th>Faculty Id</th>
+                <th>Faculty1 Id</th>
+                <th>Faculty2 Id</th>
+                <th>Faculty3 Id</th>
             </tr>
 
             <tr>
@@ -117,7 +123,9 @@
                     <input type="hidden" name="action" value="insert"/>
                     <th>&nbsp;</th>
                     <th><input value="" name="stu_id" size="10"/></th>
-                    <th><input value="" name="fac_id" size="10"/></th>
+                    <th><input value="" name="fac1_id" size="10"/></th>
+                    <th><input value="" name="fac2_id" size="10"/></th>
+                    <th><input value="" name="fac3_id" size="10"/></th>
                     <th><input type="submit" value="Insert"/></th>
                 </form>
             </tr>
@@ -142,7 +150,15 @@
                 </td>
 
                 <td>
-                    <input value="<%=rs.getInt("fac_id")%>" name="fac_id" size="15"/>
+                    <input value="<%=rs.getInt("fac1_id")%>" name="fac_id" size="15"/>
+                </td>
+
+                <td>
+                    <input value="<%=rs.getInt("fac2_id")%>" name="fac_id" size="15"/>
+                </td>
+
+                <td>
+                    <input value="<%=rs.getInt("fac3_id")%>" name="fac_id" size="15"/>
                 </td>
 
                 <%-- Button --%>

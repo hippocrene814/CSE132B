@@ -147,11 +147,20 @@
                         <option value="both">both</option>
                       </select>
                     </th>
-                    <th><input value="" name="need_lab" size="15"/></th>
-                    <th><input value="" name="need_consent" size="15"/></th>
+                    <th>
+                      <select name="need_lab">
+                        <option value="0">0</option>
+                        <option value="1">1</option>
+                      </select>
+                    </th>
+                    <th>
+                      <select name="need_consent">
+                        <option value="0">0</option>
+                        <option value="1">1</option>
+                      </select>
+                    </th>
                     <th><input value="" name="cate_id" size="15"/></th>
                     <th><input value="" name="pre_id" size="15"/></th>
-
                     <th><input type="submit" value="Insert"/></th>
                 </form>
             </tr>
