@@ -38,14 +38,17 @@
                     conn.setAutoCommit(false);
 
                     // Create the prepared statement and use it to
+//                    pstmt = conn
+//                    .prepareStatement("INSERT INTO undergrad (stu_id, col_id, major, minor, is_bms) VALUES (?, ?, ?, ?, ?)");
                     pstmt = conn
-                    .prepareStatement("INSERT INTO undergrad (stu_id, col_id, major, minor, is_bms) VALUES (?, ?, ?, ?, ?)");
+                    .prepareStatement("INSERT INTO undergrad (stu_id, col_id, major, minor, is_bms) SELECT  ?, ?, ?, ?, ? WHERE NOT EXISTS (SELECT * FROM grad g WHERE g.stu_id = ?)");
 
                     pstmt.setInt(1, Integer.parseInt(request.getParameter("stu_id")));
                     pstmt.setString(2, request.getParameter("col_id"));
                     pstmt.setString(3, request.getParameter("major"));
                     pstmt.setString(4, request.getParameter("minor"));
                     pstmt.setInt(5, Integer.parseInt(request.getParameter("is_bms")));
+                    pstmt.setInt(6, Integer.parseInt(request.getParameter("stu_id")));
                     int rowCount = pstmt.executeUpdate();
 
                     // Commit transaction
@@ -63,14 +66,13 @@
                     conn.setAutoCommit(false);
 
                     pstmt = conn
-                        .prepareStatement("UPDATE undergrad SET stu_id = ?, col_id = ?, major = ?, minor = ?, is_bms = ? WHERE undergrad_id = ? ");
+                        .prepareStatement("UPDATE undergrad SET col_id = ?, major = ?, minor = ?, is_bms = ? WHERE undergrad_id = ? ");
 
-                    pstmt.setInt(1, Integer.parseInt(request.getParameter("stu_id")));
-                    pstmt.setString(2, request.getParameter("col_id"));
-                    pstmt.setString(3, request.getParameter("major"));
-                    pstmt.setString(4, request.getParameter("minor"));
-                    pstmt.setInt(5, Integer.parseInt(request.getParameter("is_bms")));
-                    pstmt.setInt(6, Integer.parseInt(request.getParameter("undergrad_id")));
+                    pstmt.setString(1, request.getParameter("col_id"));
+                    pstmt.setString(2, request.getParameter("major"));
+                    pstmt.setString(3, request.getParameter("minor"));
+                    pstmt.setInt(4, Integer.parseInt(request.getParameter("is_bms")));
+                    pstmt.setInt(5, Integer.parseInt(request.getParameter("undergrad_id")));
 
                     int rowCount = pstmt.executeUpdate();
 
@@ -173,7 +175,7 @@
                 </td>
 
                 <td>
-                    <input value="<%=rs.getInt("stu_id")%>" name="stu_id" size="15"/>
+                    <%=rs.getInt("stu_id")%>
                 </td>
 
                 <td>

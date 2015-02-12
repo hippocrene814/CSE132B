@@ -137,9 +137,9 @@
                 <form action="course_entry_form.jsp" method="POST">
                     <input type="hidden" name="action" value="insert"/>
                     <th>&nbsp;</th>
-                    <th><input value="" name="course_number" size="15"/></th>
-                    <th><input value="" name="min_unit" size="15"/></th>
-                    <th><input value="" name="max_unit" size="15"/></th>
+                    <th><input value="" name="course_number" size="10"/></th>
+                    <th><input value="" name="min_unit" size="10"/></th>
+                    <th><input value="" name="max_unit" size="10"/></th>
                     <th>
                       <select name="grade_option">
                         <option value="letter">letter</option>
@@ -159,8 +159,8 @@
                         <option value="1">1</option>
                       </select>
                     </th>
-                    <th><input value="" name="cate_id" size="15"/></th>
-                    <th><input value="" name="pre_id" size="15"/></th>
+                    <th><input value="" name="cate_id" size="10"/></th>
+                    <th><input value="" name="pre_id" size="10"/></th>
                     <th><input type="submit" value="Insert"/></th>
                 </form>
             </tr>
@@ -196,35 +196,35 @@
                 </td>
 
                 <td>
-                    <input value="<%=rs.getString("course_number")%>" name="course_number" size="15"/>
+                    <input value="<%=rs.getString("course_number")%>" name="course_number" size="10"/>
                 </td>
 
                 <td>
-                    <input value="<%=rs.getInt("min_unit")%>" name="min_unit" size="15"/>
+                    <input value="<%=rs.getInt("min_unit")%>" name="min_unit" size="10"/>
                 </td>
 
                 <td>
-                    <input value="<%=rs.getInt("max_unit")%>" name="max_unit" size="15"/>
+                    <input value="<%=rs.getInt("max_unit")%>" name="max_unit" size="10"/>
                 </td>
 
                 <td>
-                    <input value="<%=rs.getString("grade_option")%>" name="grade_option" size="15"/>
+                    <input value="<%=rs.getString("grade_option")%>" name="grade_option" size="10"/>
                 </td>
 
                 <td>
-                    <input value="<%=rs.getInt("need_lab")%>" name="need_lab" size="15"/>
+                    <input value="<%=rs.getInt("need_lab")%>" name="need_lab" size="10"/>
                 </td>
 
                 <td>
-                    <input value="<%=rs.getInt("need_consent")%>" name="need_consent" size="15"/>
+                    <input value="<%=rs.getInt("need_consent")%>" name="need_consent" size="10"/>
                 </td>
 
                 <td>
-                    <input value="<%=rs.getInt("cate_id")%>" name="cate_id" size="15"/>
+                    <input value="<%=rs.getInt("cate_id")%>" name="cate_id" size="10"/>
                 </td>
 
                 <td>
-                    <input value="<%=rs.getInt("pre_id")%>" name="pre_id" size="15"/>
+                    <input value="<%=rs.getInt("pre_id")%>" name="pre_id" size="10"/>
                 </td>
 
                 <%-- Button --%>

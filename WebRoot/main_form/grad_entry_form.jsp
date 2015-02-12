@@ -41,11 +41,12 @@
 //                    pstmt = conn
 //                    .prepareStatement("INSERT INTO grad (dep_id, stu_id) VALUES (?, ?)");
                     pstmt = conn
-                    .prepareStatement("INSERT INTO grad (dep_id, stu_id) SELECT ?, ? WHERE NOT EXISTS (SELECT * FROM undergrad u WHERE u.stu_id = ?)");
+                    .prepareStatement("INSERT INTO grad (dep_id, stu_id, grad_type) SELECT ?, ?, ? WHERE NOT EXISTS (SELECT * FROM undergrad u WHERE u.stu_id = ?)");
 
                     pstmt.setInt(1, Integer.parseInt(request.getParameter("dep_id")));
                     pstmt.setInt(2, Integer.parseInt(request.getParameter("stu_id")));
-                    pstmt.setInt(3, Integer.parseInt(request.getParameter("stu_id")));
+                    pstmt.setString(3, request.getParameter("grad_type"));
+                    pstmt.setInt(4, Integer.parseInt(request.getParameter("stu_id")));
                     int rowCount = pstmt.executeUpdate();
 
                     // Commit transaction
@@ -63,10 +64,10 @@
                     conn.setAutoCommit(false);
 
                     pstmt = conn
-                        .prepareStatement("UPDATE grad SET dep_id = ?, stu_id = ? WHERE grad_id = ? ");
+                        .prepareStatement("UPDATE grad SET dep_id = ?, grad_type = ? WHERE grad_id = ? ");
 
                     pstmt.setInt(1, Integer.parseInt(request.getParameter("dep_id")));
-                    pstmt.setInt(2, Integer.parseInt(request.getParameter("stu_id")));
+                    pstmt.setString(2, request.getParameter("grad_type"));
                     pstmt.setInt(3, Integer.parseInt(request.getParameter("grad_id")));
 
                     int rowCount = pstmt.executeUpdate();
@@ -113,6 +114,7 @@
             <tr>
                 <th>ID</th>
                 <th>Student ID</th>
+                <th>Grad Type</th>
                 <th>Department ID</th>
             </tr>
 
@@ -121,6 +123,13 @@
                     <input type="hidden" name="action" value="insert"/>
                     <th>&nbsp;</th>
                     <th><input value="" name="stu_id" size="15"/></th>
+                    <th>
+                      <select name="grad_type">
+                        <option value="phd">phd</option>
+                        <option value="phd_candidate">phd_candidate</option>
+                        <option value="master">master</option>
+                      </select>
+                    </th>
                     <th><input value="" name="dep_id" size="15"/></th>
                     <th><input type="submit" value="Insert"/></th>
                 </form>
@@ -131,6 +140,7 @@
             <tr>
                 <th>ID</th>
                 <th>Student ID</th>
+                <th>Grad Type</th>
                 <th>Department ID</th>
                 <th>First Name</th>
                 <th>Middle Name</th>
@@ -152,7 +162,11 @@
                 </td>
 
                 <td>
-                    <input value="<%=rs.getInt("stu_id")%>" name="stu_id" size="15"/>
+                    <%=rs.getInt("stu_id")%>
+                </td>
+
+                <td>
+                    <input value="<%=rs.getString("grad_type")%>" name="grad_type" size="15"/>
                 </td>
 
                 <td>
