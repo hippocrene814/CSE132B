@@ -116,17 +116,19 @@
             <table border="1">
             <tr>
                 <th>ID</th>
-                <th>Enroll_Waitlist</th>
-                <th>Unit</th>
-                <th>Eetter_Su</th>
                 <th>Student Id</th>
                 <th>Section Id</th>
+                <th>Enroll_Waitlist</th>
+                <th>Unit</th>
+                <th>Letter_Su</th>
             </tr>
 
             <tr>
                 <form action="course_enrollment_entry_form.jsp" method="POST">
                     <input type="hidden" name="action" value="insert"/>
                     <th>&nbsp;</th>
+                    <th><input value="" name="stu_id" size="10"/></th>
+                    <th><input value="" name="section_id" size="10"/></th>
                     <th><input value="" name="is_enroll" size="10"/></th>
                     <th><input value="" name="unit" size="10"/></th>
                     <th>
@@ -135,8 +137,6 @@
                         <option value="su">su</option>
                       </select>
                     </th>
-                    <th><input value="" name="stu_id" size="10"/></th>
-                    <th><input value="" name="section_id" size="10"/></th>
                     <th><input type="submit" value="Insert"/></th>
                 </form>
             </tr>
@@ -148,14 +148,14 @@
             <table border="1">
             <tr>
                 <th>ID</th>
+                <th>Student Id</th>
+                <th>Section Id</th>
                 <th>Enroll_Waitlist</th>
                 <th>Unit</th>
                 <th>Letter_Su</th>
                 <th>Grade</th>
                 <th>Year</th>
                 <th>Quarter</th>
-                <th>Student Id</th>
-                <th>Section Id</th>
                 <th>Class Name</th>
             </tr>
             <%-- -------- Iteration Code -------- --%>
@@ -171,6 +171,14 @@
 
                 <td>
                     <%=rs.getInt("ss_id")%>
+                </td>
+
+                <td>
+                    <input value="<%=rs.getInt("stu_id")%>" name="stu_id" size="10"/>
+                </td>
+
+                <td>
+                    <input value="<%=rs.getInt("section_id")%>" name="section_id" size="10"/>
                 </td>
 
                 <td>
@@ -195,14 +203,6 @@
 
                 <td>
                     <%=rs.getString("quarter")%>
-                </td>
-
-                <td>
-                    <input value="<%=rs.getInt("stu_id")%>" name="stu_id" size="10"/>
-                </td>
-
-                <td>
-                    <input value="<%=rs.getInt("section_id")%>" name="section_id" size="10"/>
                 </td>
 
                 <td>

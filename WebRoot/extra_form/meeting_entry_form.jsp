@@ -122,7 +122,7 @@
                 <th>Start Time</th>
                 <th>End Time</th>
                 <th>Type</th>
-                <th>Day</th>
+                <th>Week Day</th>
                 <th>Location</th>
             </tr>
 

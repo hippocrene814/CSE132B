@@ -106,8 +106,10 @@
 
                 // Use the created statement to SELECT
                 rs = statement.executeQuery("SELECT * FROM section ORDER BY section_id");
+                rs = statement.executeQuery("SELECT * FROM section s, class c WHERE s.class_id = c.class_id ORDER BY section_id");
             %>
 
+            <h4>Insert</h4>
             <!-- Add an HTML table header row to format the results -->
             <table border="1">
             <tr>
@@ -128,13 +130,24 @@
                     <th><input type="submit" value="Insert"/></th>
                 </form>
             </tr>
-
+            </table>
+            <hr>
+            <h4>Modify</h4>
+            <table border="1">
+            <tr>
+                <th>ID</th>
+                <th>Class Id</th>
+                <th>Faculty Id</th>
+                <th>Number Limit</th>
+                <th>Class Title</th>
+                <th>Year</th>
+                <th>Quarter</th>
+            </tr>
             <%-- -------- Iteration Code -------- --%>
             <%
                 // Iterate over the ResultSet
                 while (rs.next()) {
             %>
-
             <tr>
                 <form action="section_entry_form.jsp" method="POST">
                     <input type="hidden" name="action" value="update"/>
@@ -154,6 +167,18 @@
 
                 <td>
                     <input value="<%=rs.getInt("section_limit")%>" name="section_limit" size="15"/>
+                </td>
+
+                <td>
+                    <%=rs.getString("title")%>
+                </td>
+
+                <td>
+                    <%=rs.getInt("year")%>
+                </td>
+
+                <td>
+                    <%=rs.getString("quarter")%>
                 </td>
 
                 <%-- Button --%>
@@ -210,7 +235,7 @@
                 }
             }
             %>
-        </table>
+            </table>
         </td>
     </tr>
 </table>

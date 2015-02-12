@@ -111,16 +111,19 @@
                 Statement statement = conn.createStatement();
 
                 // Use the created statement to SELECT
-                rs = statement.executeQuery("SELECT * FROM review ORDER BY review_id");
+                // rs = statement.executeQuery("SELECT * FROM review ORDER BY review_id");
+                rs = statement.executeQuery("SELECT * FROM review r, section s, class c WHERE r.section_id = s.section_id AND s.class_id = c.class_id ORDER BY review_id");
+
             %>
 
+            <h4>Insert</h4>
             <!-- Add an HTML table header row to format the results -->
             <table border="1">
             <tr>
                 <th>ID</th>
                 <th>Section Id</th>
                 <th>Review Date</th>
-                <th>Day</th>
+                <th>Week Day</th>
                 <th>Start Time</th>
                 <th>End Time</th>
                 <th>Location</th>
@@ -140,6 +143,20 @@
                     <th><input type="submit" value="Insert"/></th>
                 </form>
             </tr>
+            </table>
+            <hr>
+            <h4>Modify</h4>
+            <table border="1">
+            <tr>
+                <th>ID</th>
+                <th>Section Id</th>
+                <th>Class Title</th>
+                <th>Review Date</th>
+                <th>Week Day</th>
+                <th>Start Time</th>
+                <th>End Time</th>
+                <th>Location</th>
+            </tr>
 
             <%-- -------- Iteration Code -------- --%>
             <%
@@ -158,6 +175,10 @@
 
                 <td>
                     <input value="<%=rs.getInt("section_id")%>" name="section_id" size="15"/>
+                </td>
+
+                <td>
+                    <%=rs.getString("title")%>
                 </td>
 
                 <td>

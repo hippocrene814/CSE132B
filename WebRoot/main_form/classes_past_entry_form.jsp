@@ -115,17 +115,19 @@
             <table border="1">
             <tr>
                 <th>ID</th>
+                <th>Student Id</th>
+                <th>Section Id</th>
                 <th>Unit</th>
                 <th>Letter_Su</th>
                 <th>Grade</th>
-                <th>Student Id</th>
-                <th>Section Id</th>
             </tr>
 
             <tr>
                 <form action="classes_past_entry_form.jsp" method="POST">
                     <input type="hidden" name="action" value="insert"/>
                     <th>&nbsp;</th>
+                    <th><input value="" name="stu_id" size="10"/></th>
+                    <th><input value="" name="section_id" size="10"/></th>
                     <th><input value="" name="unit" size="10"/></th>
                     <th>
                       <select name="letter_su">
@@ -133,19 +135,7 @@
                         <option value="su">su</option>
                       </select>
                     </th>
-                    <th>
-                      <select name="grade">
-                        <option value="a">a</option>
-                        <option value="b">b</option>
-                        <option value="c">c</option>
-                        <option value="d">d</option>
-                        <option value="s">s</option>
-                        <option value="u">u</option>
-                        <option value="na">na</option>
-                      </select>
-                    </th>
-                    <th><input value="" name="stu_id" size="10"/></th>
-                    <th><input value="" name="section_id" size="10"/></th>
+                    <th><input value="" name="grade" size="10"/></th>
                     <th><input type="submit" value="Insert"/></th>
                 </form>
             </tr>
@@ -155,14 +145,14 @@
             <table border="1">
             <tr>
                 <th>ID</th>
+                <th>Student Id</th>
+                <th>Section Id</th>
                 <th>Enroll_Waitlist</th>
                 <th>Unit</th>
                 <th>Letter_Su</th>
                 <th>Grade</th>
                 <th>Year</th>
                 <th>Quarter</th>
-                <th>Student Id</th>
-                <th>Section Id</th>
                 <th>Class Name</th>
             </tr>
 
@@ -182,6 +172,14 @@
                 </td>
 
                 <td>
+                    <input value="<%=rs.getInt("stu_id")%>" name="stu_id" size="10"/>
+                </td>
+
+                <td>
+                    <input value="<%=rs.getInt("section_id")%>" name="section_id" size="10"/>
+                </td>
+
+                <td>
                     Enrolled
                 </td>
 
@@ -198,19 +196,11 @@
                 </td>
 
                 <td>
-                    <input value="<%=rs.getInt("year")%>" name="year" size="10"/>
+                    <%=rs.getInt("year")%>
                 </td>
 
                 <td>
-                    <input value="<%=rs.getString("quarter")%>" name="quarter" size="10"/>
-                </td>
-
-                <td>
-                    <input value="<%=rs.getInt("stu_id")%>" name="stu_id" size="10"/>
-                </td>
-
-                <td>
-                    <input value="<%=rs.getInt("section_id")%>" name="section_id" size="10"/>
+                    <%=rs.getString("quarter")%>
                 </td>
 
                 <td>

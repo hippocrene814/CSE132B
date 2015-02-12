@@ -103,9 +103,10 @@
                 Statement statement = conn.createStatement();
 
                 // Use the created statement to SELECT
-                rs = statement.executeQuery("SELECT * FROM degree_concentration ORDER BY dc_id");
+                rs = statement.executeQuery("SELECT * FROM degree_concentration dc, degree d, concentration c WHERE dc.degree_id = d.degree_id AND c.con_id = dc.con_id ORDER BY dc_id");
             %>
 
+            <h4>Insert</h4>
             <!-- Add an HTML table header row to format the results -->
             <table border="1">
             <tr>
@@ -124,6 +125,20 @@
                     <th><input value="" name="min_grade" size="10"/></th>
                     <th><input type="submit" value="Insert"/></th>
                 </form>
+            </tr>
+
+            </table>
+            <hr>
+            <h4>Modify</h4>
+            <table border="1">
+            <tr>
+                <th>ID</th>
+                <th>Degree Id</th>
+                <th>Major</th>
+                <th>Type</th>
+                <th>Concentration Id</th>
+                <th>Concentration Name</th>
+                <th>Min Grade</th>
             </tr>
 
             <%-- -------- Iteration Code -------- --%>
@@ -146,7 +161,19 @@
                 </td>
 
                 <td>
+                    <%=rs.getString("name")%>
+                </td>
+
+                <td>
+                    <%=rs.getString("type")%>
+                </td>
+
+                <td>
                     <input value="<%=rs.getInt("con_id")%>" name="con_id" size="15"/>
+                </td>
+
+                <td>
+                    <%=rs.getString("con_name")%>
                 </td>
 
                 <td>

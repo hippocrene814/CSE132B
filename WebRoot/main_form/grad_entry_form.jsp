@@ -109,6 +109,7 @@
                 rs = statement.executeQuery("SELECT * FROM grad g, student s WHERE g.stu_id = s.stu_id ORDER BY grad_id");
             %>
 
+            <h4>Insert</h4>
             <!-- Add an HTML table header row to format the results -->
             <table border="1">
             <tr>
@@ -136,6 +137,7 @@
             </tr>
             </table>
             <hr>
+            <h4>Modify</h4>
             <table border="1">
             <tr>
                 <th>ID</th>

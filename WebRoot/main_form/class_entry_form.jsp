@@ -106,9 +106,10 @@
                 Statement statement = conn.createStatement();
 
                 // Use the created statement to SELECT
-                rs = statement.executeQuery("SELECT * FROM class ORDER BY class_id");
+                rs = statement.executeQuery("SELECT * FROM class cl, course co WHERE cl.course_id = co.course_id ORDER BY class_id");
             %>
 
+            <h4>Insert</h4>
             <!-- Add an HTML table header row to format the results -->
             <table border="1">
             <tr>
@@ -138,6 +139,18 @@
                 </form>
             </tr>
 
+            </table>
+            <hr>
+            <h4>Modify</h4>
+            <table border="1">
+            <tr>
+                <th>ID</th>
+                <th>Title</th>
+                <th>Course Id</th>
+                <th>Year</th>
+                <th>Quarter</th>
+                <th>Course Number</th>
+            </tr>
             <%-- -------- Iteration Code -------- --%>
             <%
                 // Iterate over the ResultSet
@@ -167,6 +180,10 @@
 
                 <td>
                     <input value="<%=rs.getString("quarter")%>" name="quarter" size="15"/>
+                </td>
+
+                <td>
+                    <%=rs.getString("course_number")%>
                 </td>
 
                 <%-- Button --%>
