@@ -150,15 +150,15 @@
                 </td>
 
                 <td>
-                    <input value="<%=rs.getInt("fac1_id")%>" name="fac_id" size="15"/>
+                    <input value="<%=rs.getInt("fac1_id")%>" name="fac1_id" size="15"/>
                 </td>
 
                 <td>
-                    <input value="<%=rs.getInt("fac2_id")%>" name="fac_id" size="15"/>
+                    <input value="<%=rs.getInt("fac2_id")%>" name="fac2_id" size="15"/>
                 </td>
 
                 <td>
-                    <input value="<%=rs.getInt("fac3_id")%>" name="fac_id" size="15"/>
+                    <input value="<%=rs.getInt("fac3_id")%>" name="fac3_id" size="15"/>
                 </td>
 
                 <%-- Button --%>
