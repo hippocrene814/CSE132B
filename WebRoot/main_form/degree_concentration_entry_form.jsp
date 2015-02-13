@@ -43,7 +43,7 @@
 
                     pstmt.setInt(1, Integer.parseInt(request.getParameter("degree_id")));
                     pstmt.setInt(2, Integer.parseInt(request.getParameter("con_id")));
-                    pstmt.setInt(3, Integer.parseInt(request.getParameter("min_grade")));
+                    pstmt.setFloat(3, Float.parseFloat(request.getParameter("min_grade")));
                     int rowCount = pstmt.executeUpdate();
 
                     // Commit transaction
@@ -65,7 +65,7 @@
 
                     pstmt.setInt(1, Integer.parseInt(request.getParameter("degree_id")));
                     pstmt.setInt(2, Integer.parseInt(request.getParameter("con_id")));
-                    pstmt.setInt(3, Integer.parseInt(request.getParameter("min_grade")));
+                    pstmt.setFloat(3, Float.parseFloat(request.getParameter("min_grade")));
                     pstmt.setInt(4, Integer.parseInt(request.getParameter("dc_id")));
                     int rowCount = pstmt.executeUpdate();
 
@@ -177,7 +177,7 @@
                 </td>
 
                 <td>
-                    <input value="<%=rs.getInt("min_grade")%>" name="min_grade" size="15"/>
+                    <input value="<%=rs.getFloat("min_grade")%>" name="min_grade" size="15"/>
                 </td>
 
                 <%-- Button --%>
