@@ -1,12 +1,12 @@
 <html>
 
 <body>
-<h2>Degree Concentration Entry Form</h2>
+<h2>Category Entry Form</h2>
 <table>
     <tr>
         <td valign="top">
             <%-- -------- Include menu HTML code -------- --%>
-            <jsp:include page="/main_menu.html" />
+            <jsp:include page="/report_menu.html" />
         </td>
         <td>
             <%-- Import the java.sql package --%>
@@ -39,12 +39,9 @@
 
                     // Create the prepared statement and use it to
                     pstmt = conn
-                    .prepareStatement("INSERT INTO degree_concentration (degree_id, con_id, min_grade, min_unit) VALUES (?, ?, ?, ?)");
+                    .prepareStatement("INSERT INTO category (cate_name) VALUES (?) ");
 
-                    pstmt.setInt(1, Integer.parseInt(request.getParameter("degree_id")));
-                    pstmt.setInt(2, Integer.parseInt(request.getParameter("con_id")));
-                    pstmt.setFloat(3, Float.parseFloat(request.getParameter("min_grade")));
-                    pstmt.setInt(4, Integer.parseInt(request.getParameter("min_unit")));
+                    pstmt.setString(1, request.getParameter("cate_name"));
                     int rowCount = pstmt.executeUpdate();
 
                     // Commit transaction
@@ -61,14 +58,13 @@
                     // Begin transaction
                     conn.setAutoCommit(false);
 
+                    // Create the prepared statement and use it to
+                    // UPDATE student values in the Students table.
                     pstmt = conn
-                        .prepareStatement("UPDATE degree_concentration SET degree_id = ?, con_id = ?, min_grade = ?, min_unit = ? WHERE dc_id = ? ");
+                        .prepareStatement("UPDATE category SET cate_name = ? WHERE cate_id = ? ");
 
-                    pstmt.setInt(1, Integer.parseInt(request.getParameter("degree_id")));
-                    pstmt.setInt(2, Integer.parseInt(request.getParameter("con_id")));
-                    pstmt.setFloat(3, Float.parseFloat(request.getParameter("min_grade")));
-                    pstmt.setInt(4, Integer.parseInt(request.getParameter("min_unit")));
-                    pstmt.setInt(5, Integer.parseInt(request.getParameter("dc_id")));
+                    pstmt.setString(1, request.getParameter("cate_name"));
+                    pstmt.setInt(2, Integer.parseInt(request.getParameter("cate_id")));
                     int rowCount = pstmt.executeUpdate();
 
                     // Commit transaction
@@ -88,9 +84,9 @@
                     // Create the prepared statement and use it to
                     // DELETE students FROM the Students table.
                     pstmt = conn
-                        .prepareStatement("DELETE FROM degree_concentration WHERE dc_id = ?");
+                        .prepareStatement("DELETE FROM category WHERE cate_id = ?");
 
-                    pstmt.setInt(1, Integer.parseInt(request.getParameter("dc_id")));
+                    pstmt.setInt(1, Integer.parseInt(request.getParameter("cate_id")));
                     int rowCount = pstmt.executeUpdate();
 
                     // Commit transaction
@@ -105,45 +101,23 @@
                 Statement statement = conn.createStatement();
 
                 // Use the created statement to SELECT
-                rs = statement.executeQuery("SELECT * FROM degree_concentration dc, degree d, concentration c WHERE dc.degree_id = d.degree_id AND c.con_id = dc.con_id ORDER BY dc_id");
+                rs = statement.executeQuery("SELECT * FROM category ORDER BY cate_id");
             %>
 
-            <h4>Insert</h4>
             <!-- Add an HTML table header row to format the results -->
             <table border="1">
             <tr>
                 <th>ID</th>
-                <th>Degree Id</th>
-                <th>Concentration Id</th>
-                <th>Min Grade</th>
-                <th>Min Unit</th>
+                <th>Name</th>
             </tr>
 
             <tr>
-                <form action="degree_concentration_entry_form.jsp" method="POST">
+                <form action="category_entry_form.jsp" method="POST">
                     <input type="hidden" name="action" value="insert"/>
                     <th>&nbsp;</th>
-                    <th><input value="" name="degree_id" size="10"/></th>
-                    <th><input value="" name="con_id" size="10"/></th>
-                    <th><input value="" name="min_grade" size="10"/></th>
-                    <th><input value="" name="min_unit" size="10"/></th>
+                    <th><input value="" name="cate_name" size="10"/></th>
                     <th><input type="submit" value="Insert"/></th>
                 </form>
-            </tr>
-
-            </table>
-            <hr>
-            <h4>Modify</h4>
-            <table border="1">
-            <tr>
-                <th>ID</th>
-                <th>Degree Id</th>
-                <th>Major</th>
-                <th>Type</th>
-                <th>Concentration Id</th>
-                <th>Concentration Name</th>
-                <th>Min Grade</th>
-                <th>Min Unit</th>
             </tr>
 
             <%-- -------- Iteration Code -------- --%>
@@ -151,49 +125,25 @@
                 // Iterate over the ResultSet
                 while (rs.next()) {
             %>
-
             <tr>
-                <form action="degree_concentration_entry_form.jsp" method="POST">
+                <form action="category_entry_form.jsp" method="POST">
                     <input type="hidden" name="action" value="update"/>
-                    <input type="hidden" name="dc_id" value="<%=rs.getInt("dc_id")%>"/>
+                    <input type="hidden" name="cate_id" value="<%=rs.getInt("cate_id")%>"/>
 
                 <td>
-                    <%=rs.getInt("dc_id")%>
+                    <%=rs.getInt("cate_id")%>
                 </td>
 
                 <td>
-                    <input value="<%=rs.getInt("degree_id")%>" name="degree_id" size="15"/>
+                    <input value="<%=rs.getString("cate_name")%>" name="cate_name" size="15"/>
                 </td>
 
-                <td>
-                    <%=rs.getString("name")%>
-                </td>
-
-                <td>
-                    <%=rs.getString("type")%>
-                </td>
-
-                <td>
-                    <input value="<%=rs.getInt("con_id")%>" name="con_id" size="15"/>
-                </td>
-
-                <td>
-                    <%=rs.getString("con_name")%>
-                </td>
-
-                <td>
-                    <input value="<%=rs.getFloat("min_grade")%>" name="min_grade" size="15"/>
-                </td>
-
-                <td>
-                    <input value="<%=rs.getInt("min_unit")%>" name="min_unit" size="15"/>
-                </td>
                 <%-- Button --%>
                 <td><input type="submit" value="Update"></td>
                 </form>
-                <form action="degree_concentration_entry_form.jsp" method="POST">
+                <form action="category_entry_form.jsp" method="POST">
                     <input type="hidden" name="action" value="delete"/>
-                    <input type="hidden" name="dc_id" value="<%=rs.getInt("dc_id")%>"/>
+                    <input type="hidden" name="cate_id" value="<%=rs.getInt("cate_id")%>"/>
                     <%-- Button --%>
                 <td><input type="submit" value="Delete"/></td>
                 </form>
