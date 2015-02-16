@@ -129,10 +129,10 @@
                     <th><input value="" name="year" size="15"/></th>
                     <th>
                       <select name="quarter">
-                        <option value="spring">spring</option>
-                        <option value="summer">summer</option>
-                        <option value="fall">fall</option>
-                        <option value="winter">winter</option>
+                        <option value="SPRING">SPRING</option>
+                        <option value="SUMMER">SUMMER</option>
+                        <option value="FALL">FALL</option>
+                        <option value="WINTER">WINTER</option>
                       </select>
                     </th>
                     <th><input type="submit" value="Insert"/></th>
