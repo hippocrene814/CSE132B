@@ -107,7 +107,7 @@
                 Statement statement = conn.createStatement();
 
                 // Use the created statement to SELECT
-                rs = statement.executeQuery("SELECT * FROM student_section ss, section s, class c WHERE ss.section_id = s.section_id AND s.class_id = c.class_id AND c.year <> 2009 AND c.quarter <> 'SPRING' ORDER BY ss.ss_id");
+                rs = statement.executeQuery("SELECT * FROM student_section ss, section s, class c WHERE ss.section_id = s.section_id AND s.class_id = c.class_id AND (c.year <> 2009 OR c.quarter <> 'SPRING') ORDER BY ss.ss_id");
             %>
 
             <h4>Insert</h4>
