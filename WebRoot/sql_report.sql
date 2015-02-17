@@ -47,11 +47,57 @@ WHERE s.stu_id = g.stu_id
 
 SELECT name
 FROM degree
+WHERE type = 'BE' OR type = 'BA'
 
 SELECT ca.cate_id, dc.min_unit - SUM(ss.unit)
 FROM student_section ss, section se, class cl, course co, degree d, degree_category dc, category ca
 WHERE ss.stu_id = ? AND ss.section_id = se.section_id AND se.class_id = cl.class_id AND cl.course_id = co.course_id AND d.degree_id = ? AND d.degree_id = dc.degree_id AND dc.cate_id = ca.cate_id
 GROUP BY ca.cate_id, dc.min_unit
+
+5.
+SELECT s.ssn
+FROM student s, student_enrollment se
+WHERE s.stu_id = se.stu_id AND se.year = 2009 AND se.quarter = 'SPRING'AND NOT EXISTS (
+SELECT *
+FROM undergrad u
+WHERE s.stu_id = u.stu_id
+)
+
+SELECT name
+FROM degree
+WHERE type = 'MS'
+
+SELECT con.min_unit - SUM(ss.unit) AS diff
+FROM student st, student_section ss, section se, class cl, course_concentration cc, concentration con
+WHERE st.ssn = 232843451 AND st.stu_id = ss.stu_id AND ss.section_id = se.section_id AND se.class_id = cl.class_id AND cl.course_id = cc.course_id AND cc.con_id = con.con_id
+GROUP BY con.con_id, con.min_unit
+
+SELECT dc.min_unit - SUM(ss.unit) AS diff
+FROM student st, student_section ss, section se, class cl, course_concentration cc, degree_concentration dc
+WHERE st.ssn = 232843451 AND st.stu_id = ss.stu_id AND ss.section_id = se.section_id AND se.class_id = cl.class_id AND cl.course_id = cc.course_id AND cc.con_id = dc.con_id
+GROUP BY dc.con_id, dc.min_unit
+
+6.
+SELECT s.ssn
+FROM student s, student_enrollment se
+WHERE s.stu_id = se.stu_id AND se.year = 2009 AND se.quarter = 'SPRING'
+
+SELECT s.section_id, c.course_id
+FROM section s, class c
+WHERE s.class_id = c.class_id AND c.year = 2009 AND c.quarter = 'SPRING'
+
+7.
+SELECT s.section_id, c.course_id
+FROM section s, class c
+WHERE s.class_id = c.class_id AND c.year = 2009 AND c.quarter = 'SPRING'
+
+8.
+SELECT cl.class_id
+FROM class cl
+
+SELECT fa.fac_id
+FROM faculty fa
+
 
 
 
