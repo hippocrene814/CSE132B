@@ -50,6 +50,19 @@
 
                     // Commit transaction
                     conn.commit();
+//                    conn.setAutoCommit(true);
+
+//                    conn.setAutoCommit(false);
+
+                    // Create the prepared statement and use it to
+                    pstmt = conn
+                    .prepareStatement("UPDATE section SET num_choose = num_choose + 1 WHERE section_id = ?");
+
+                    pstmt.setInt(1, Integer.parseInt(request.getParameter("section_id")));
+                    rowCount = pstmt.executeUpdate();
+
+                    // Commit transaction
+                    conn.commit();
                     conn.setAutoCommit(true);
                 }
             %>
@@ -59,8 +72,21 @@
                 // Check if an update is requested
                 if (action != null && action.equals("update")) {
 
-                    // Begin transaction
                     conn.setAutoCommit(false);
+
+                    // Create the prepared statement and use it to
+                    pstmt = conn
+                    .prepareStatement("UPDATE section SET num_choose = num_choose - 1 WHERE section_id IN (SELECT ss.section_id FROM student_section ss WHERE ss_id = ?)");
+
+                    pstmt.setInt(1, Integer.parseInt(request.getParameter("ss_id")));
+                    int rowCount = pstmt.executeUpdate();
+
+                    // Commit transaction
+                    conn.commit();
+//                    conn.setAutoCommit(true);
+
+                    // Begin transaction
+//                    conn.setAutoCommit(false);
 
                     pstmt = conn
                         .prepareStatement("UPDATE student_section SET is_enroll = ?, unit = ?, letter_su = ?, stu_id = ?, section_id = ? WHERE ss_id = ? ");
@@ -71,7 +97,20 @@
                     pstmt.setInt(4, Integer.parseInt(request.getParameter("stu_id")));
                     pstmt.setInt(5, Integer.parseInt(request.getParameter("section_id")));
                     pstmt.setInt(6, Integer.parseInt(request.getParameter("ss_id")));
-                    int rowCount = pstmt.executeUpdate();
+                    rowCount = pstmt.executeUpdate();
+
+                    // Commit transaction
+                    conn.commit();
+//                    conn.setAutoCommit(true);
+
+//                    conn.setAutoCommit(false);
+
+                    // Create the prepared statement and use it to
+                    pstmt = conn
+                    .prepareStatement("UPDATE section SET num_choose = num_choose + 1 WHERE section_id = ?");
+
+                    pstmt.setInt(1, Integer.parseInt(request.getParameter("section_id")));
+                    rowCount = pstmt.executeUpdate();
 
                     // Commit transaction
                     conn.commit();
@@ -84,8 +123,21 @@
                 // Check if a delete is requested
                 if (action != null && action.equals("delete")) {
 
-                    // Begin transaction
                     conn.setAutoCommit(false);
+
+                    // Create the prepared statement and use it to
+                    pstmt = conn
+                    .prepareStatement("UPDATE section SET num_choose = num_choose - 1 WHERE section_id IN (SELECT ss.section_id FROM student_section ss WHERE ss_id = ?)");
+
+                    pstmt.setInt(1, Integer.parseInt(request.getParameter("ss_id")));
+                    int rowCount = pstmt.executeUpdate();
+
+                    // Commit transaction
+                    conn.commit();
+//                    conn.setAutoCommit(true);
+
+                    // Begin transaction
+//                    conn.setAutoCommit(false);
 
                     // Create the prepared statement and use it to
                     // DELETE students FROM the Students table.
@@ -93,7 +145,7 @@
                         .prepareStatement("DELETE FROM student_section WHERE ss_id = ?");
 
                     pstmt.setInt(1, Integer.parseInt(request.getParameter("ss_id")));
-                    int rowCount = pstmt.executeUpdate();
+                    rowCount = pstmt.executeUpdate();
 
                     // Commit transaction
                     conn.commit();
