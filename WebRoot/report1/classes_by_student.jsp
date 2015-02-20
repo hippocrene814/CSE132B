@@ -73,28 +73,6 @@
                 }
             %>
 
-            <%-- -------- DELETE Code -------- --%>
-            <%
-                // Check if a delete is requested
-                if (action != null && action.equals("delete")) {
-
-                    // Begin transaction
-                    conn.setAutoCommit(false);
-
-                    // Create the prepared statement and use it to
-                    // DELETE students FROM the Students table.
-                    pstmt = conn
-                        .prepareStatement("DELETE FROM category WHERE cate_id = ?");
-
-                    pstmt.setInt(1, Integer.parseInt(request.getParameter("cate_id")));
-                    int rowCount = pstmt.executeUpdate();
-
-                    // Commit transaction
-                    conn.commit();
-                    conn.setAutoCommit(true);
-                }
-            %>
-
             <%-- -------- SELECT Statement Code -------- --%>
             <%
                 // Create the statement
@@ -140,12 +118,6 @@
 
                 <%-- Button --%>
                 <td><input type="submit" value="Update"></td>
-                </form>
-                <form action="category_entry_form.jsp" method="POST">
-                    <input type="hidden" name="action" value="delete"/>
-                    <input type="hidden" name="cate_id" value="<%=rs.getInt("cate_id")%>"/>
-                    <%-- Button --%>
-                <td><input type="submit" value="Delete"/></td>
                 </form>
             </tr>
             <%
