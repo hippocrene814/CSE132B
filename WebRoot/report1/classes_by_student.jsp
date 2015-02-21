@@ -28,30 +28,9 @@
                     "user=postgres&password=wizard");
             %>
 
-            <%-- -------- INSERT Code -------- --%>
-            <%
-                String action = request.getParameter("action");
-                // Check if an insertion is requested
-                if (action != null && action.equals("insert")) {
-
-                    // Begin transaction
-                    conn.setAutoCommit(false);
-
-                    // Create the prepared statement and use it to
-                    pstmt = conn
-                    .prepareStatement("INSERT INTO category (cate_name) VALUES (?) ");
-
-                    pstmt.setString(1, request.getParameter("cate_name"));
-                    int rowCount = pstmt.executeUpdate();
-
-                    // Commit transaction
-                    conn.commit();
-                    conn.setAutoCommit(true);
-                }
-            %>
-
             <%-- -------- UPDATE Code -------- --%>
             <%
+                String action = request.getParameter("action");
                 // Check if an update is requested
                 if (action != null && action.equals("update")) {
 
@@ -79,51 +58,24 @@
                 Statement statement = conn.createStatement();
 
                 // Use the created statement to SELECT
-                rs = statement.executeQuery("SELECT * FROM category ORDER BY cate_id");
+//                rs = statement.executeQuery("SELECT * FROM category ORDER BY cate_id");
+                rs = statement.executeQuery("SELECT st.first_name as first, st.middle_name as middle, st.last_name as last, st.ssn as ssn FROM student st, student_enrollment se WHERE st.stu_id = se.stu_id AND se.year = 2009 AND se.quarter = 'SPRING'");
             %>
 
             <!-- Add an HTML table header row to format the results -->
-            <table border="1">
-            <tr>
-                <th>ID</th>
-                <th>Name</th>
-            </tr>
-
-            <tr>
-                <form action="category_entry_form.jsp" method="POST">
-                    <input type="hidden" name="action" value="insert"/>
-                    <th>&nbsp;</th>
-                    <th><input value="" name="cate_name" size="10"/></th>
-                    <th><input type="submit" value="Insert"/></th>
-                </form>
-            </tr>
-
+            <select id="ssn">
             <%-- -------- Iteration Code -------- --%>
             <%
                 // Iterate over the ResultSet
                 while (rs.next()) {
             %>
-            <tr>
-                <form action="category_entry_form.jsp" method="POST">
-                    <input type="hidden" name="action" value="update"/>
-                    <input type="hidden" name="cate_id" value="<%=rs.getInt("cate_id")%>"/>
-
-                <td>
-                    <%=rs.getInt("cate_id")%>
-                </td>
-
-                <td>
-                    <input value="<%=rs.getString("cate_name")%>" name="cate_name" size="15"/>
-                </td>
-
-                <%-- Button --%>
-                <td><input type="submit" value="Update"></td>
-                </form>
-            </tr>
+            <option value='<%=rs.getInt("ssn")%>'>
+                    <%=rs.getInt("ssn")%>, <%=rs.getString("last")%>, <%=rs.getString("middle")%>, <%=rs.getString("first")%>
+            </option>
             <%
                 }
             %>
-
+            </select>
             <%-- -------- Close Connection Code -------- --%>
             <%
                 // Close the ResultSet
@@ -164,7 +116,6 @@
                 }
             }
             %>
-        </table>
         </td>
     </tr>
 </table>
