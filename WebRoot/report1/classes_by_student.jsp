@@ -1,7 +1,7 @@
 <html>
 
 <body>
-<h2>Category Entry Form</h2>
+<h2>Classes Taken by Student</h2>
 <table>
     <tr>
         <td valign="top">
@@ -98,7 +98,7 @@
                 // Use the created statement to SELECT
                 rs = statement.executeQuery("SELECT st.first_name as first, st.middle_name as middle, st.last_name as last, st.ssn as ssn FROM student st, student_enrollment se WHERE st.stu_id = se.stu_id AND se.year = 2009 AND se.quarter = 'SPRING'");
             %>
-
+            <hr>
             <form action="classes_by_student.jsp" method="POST">
             <input type="hidden" name="action" value="show_class"/>
             <!-- Add an HTML table header row to format the results -->
@@ -107,11 +107,11 @@
             <%
                 // Iterate over the ResultSet
                 while (rs.next()) {
-            %>
-            <option value='<%=rs.getInt("ssn")%>'>
-                    <%=rs.getInt("ssn")%>, <%=rs.getString("last")%>, <%=rs.getString("middle")%>, <%=rs.getString("first")%>
-            </option>
-            <%
+                %>
+                <option value='<%=rs.getInt("ssn")%>'>
+                        <%=rs.getInt("ssn")%>, <%=rs.getString("last")%>, <%=rs.getString("middle")%>, <%=rs.getString("first")%>
+                </option>
+                <%
                 }
             %>
             </select>

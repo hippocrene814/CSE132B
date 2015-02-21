@@ -1,7 +1,7 @@
 <html>
 
 <body>
-<h2>Category Entry Form</h2>
+<h2>Class Schedule</h2>
 <table>
     <tr>
         <td valign="top">

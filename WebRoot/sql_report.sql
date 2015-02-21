@@ -150,16 +150,27 @@ FROM class cl, section se, student_section ss, student st
 WHERE cl.class_id = ? AND se.class_id = cl.class_id AND ss.section_id = se.section_id AND ss.stu_id = st.stu_id
 
 8.
-SELECT co.course_id
-FROM course co
+-- ii
+SELECT ss.grade, count(*)
+FROM class cl, section se, student_section ss
+WHERE cl.course_id = ? AND cl.year = ? AND cl.quarter = ? AND cl.class_id = se.class_id AND se.fac_id = ? AND se.section_id = ss.section_id AND ss.grade <> 'IN'
+GROUP BY ss.grade
 
-SELECT fa.fac_id
-FROM faculty fa
+-- iii
+SELECT ss.grade, count(*)
+FROM class cl, section se, student_section ss
+WHERE cl.course_id = ? AND cl.class_id = se.class_id AND se.fac_id = ? AND se.section_id = ss.section_id AND ss.grade <> 'IN'
+GROUP BY ss.grade
 
+-- iv
+SELECT ss.grade, count(*)
+FROM class cl, section se, student_section ss
+WHERE cl.course_id = ? AND cl.class_id = se.class_id AND se.section_id = ss.section_id AND ss.grade <> 'IN'
+GROUP BY ss.grade
 
-
-
-
-
+-- v
+SELECT SUM(con.grade_num) / count(*)
+FROM class cl, section se, student_section ss, conversion con
+WHERE cl.course_id = ? AND cl.class_id = se.class_id AND se.fac_id = ? AND se.section_id = ss.section_id AND ss.grade <> 'IN' AND ss.grade = con.grade_letter
 
 

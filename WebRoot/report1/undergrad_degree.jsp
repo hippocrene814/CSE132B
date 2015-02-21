@@ -1,7 +1,7 @@
 <html>
 
 <body>
-<h2>Category Entry Form</h2>
+<h2>Undergrad Degree</h2>
 <table>
     <tr>
         <td valign="top">
