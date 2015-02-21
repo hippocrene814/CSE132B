@@ -17,6 +17,7 @@
             Connection conn = null;
             PreparedStatement pstmt = null;
             ResultSet rs = null;
+            ResultSet rs2 = null;
 
             try {
                 // Registering Postgresql JDBC driver with the DriverManager
@@ -28,27 +29,64 @@
                     "user=postgres&password=wizard");
             %>
 
-            <%-- -------- UPDATE Code -------- --%>
             <%
                 String action = request.getParameter("action");
-                // Check if an update is requested
-                if (action != null && action.equals("update")) {
+                // Check if an insertion is requested
+                if (action != null && action.equals("show_class")) {
 
                     // Begin transaction
                     conn.setAutoCommit(false);
 
                     // Create the prepared statement and use it to
-                    // UPDATE student values in the Students table.
                     pstmt = conn
-                        .prepareStatement("UPDATE category SET cate_name = ? WHERE cate_id = ? ");
+                    .prepareStatement("SELECT ss.unit as unit, ss.section_id as section_id, c.class_id as class_id, c.title as title, c.course_id as course_id, c.year as year, c.quarter as quarter FROM student st, student_section ss, section se, class c WHERE st.ssn = ? AND st.stu_id = ss.stu_id AND ss.section_id = se.section_id AND se.class_id = c.class_id AND c.year = 2009 AND c.quarter = 'SPRING'");
 
-                    pstmt.setString(1, request.getParameter("cate_name"));
-                    pstmt.setInt(2, Integer.parseInt(request.getParameter("cate_id")));
-                    int rowCount = pstmt.executeUpdate();
+                    pstmt.setInt(1, Integer.parseInt(request.getParameter("show_ssn")));
+                    rs2 = pstmt.executeQuery();
+                    System.out.println("haha");
+                    System.out.println(rs2);
 
                     // Commit transaction
                     conn.commit();
                     conn.setAutoCommit(true);
+
+                    %>
+                    <table border="1">
+                    <tr>
+                    <th>Section Id </th>
+                    <th>Unit </th>
+                    <th>Class Id </th>
+                    <th>Title </th>
+                    <th>Course Id </th>
+                    </tr>
+                    <%-- -------- Iteration Code2 -------- --%>
+                    <%
+                        // Iterate over the ResultSet
+                        while (rs2.next()) {
+                        System.out.println("unit : " + rs2.getInt("unit"));
+                    %>
+                    <tr>
+                        <td>
+                            <%=rs2.getInt("section_id")%>
+                        </td>
+                        <td>
+                            <%=rs2.getInt("unit")%>
+                        </td>
+                        <td>
+                            <%=rs2.getInt("class_id")%>
+                        </td>
+                        <td>
+                            <%=rs2.getString("title")%>
+                        </td>
+                        <td>
+                            <%=rs2.getInt("course_id")%>
+                        </td>
+                    </tr>
+                    <%
+                        }
+                    %>
+                    </table>
+                    <%
                 }
             %>
 
@@ -58,12 +96,13 @@
                 Statement statement = conn.createStatement();
 
                 // Use the created statement to SELECT
-//                rs = statement.executeQuery("SELECT * FROM category ORDER BY cate_id");
                 rs = statement.executeQuery("SELECT st.first_name as first, st.middle_name as middle, st.last_name as last, st.ssn as ssn FROM student st, student_enrollment se WHERE st.stu_id = se.stu_id AND se.year = 2009 AND se.quarter = 'SPRING'");
             %>
 
+            <form action="classes_by_student.jsp" method="POST">
+            <input type="hidden" name="action" value="show_class"/>
             <!-- Add an HTML table header row to format the results -->
-            <select id="ssn">
+            <select name="show_ssn">
             <%-- -------- Iteration Code -------- --%>
             <%
                 // Iterate over the ResultSet
@@ -76,11 +115,13 @@
                 }
             %>
             </select>
+            <input type="submit" value="Submit"/>
+            </form>
+
             <%-- -------- Close Connection Code -------- --%>
             <%
                 // Close the ResultSet
                 rs.close();
-
                 // Close the Statement
                 statement.close();
 
@@ -101,6 +142,12 @@
                         rs.close();
                     } catch (SQLException e) { } // Ignore
                     rs = null;
+                }
+                if (rs2 != null) {
+                    try {
+                        rs2.close();
+                    } catch (SQLException e) { } // Ignore
+                    rs2 = null;
                 }
                 if (pstmt != null) {
                     try {
