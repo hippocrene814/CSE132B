@@ -158,25 +158,25 @@ WHERE cl.class_id = ? AND se.class_id = cl.class_id AND ss.section_id = se.secti
 
 8.
 -- ii
-SELECT ss.grade, count(*)
+SELECT ss.grade, count(*) AS cnt
 FROM class cl, section se, student_section ss
 WHERE cl.course_id = ? AND cl.year = ? AND cl.quarter = ? AND cl.class_id = se.class_id AND se.fac_id = ? AND se.section_id = ss.section_id AND ss.grade <> 'IN'
 GROUP BY ss.grade
 
 -- iii
-SELECT ss.grade, count(*)
+SELECT ss.grade, count(*) AS cnt
 FROM class cl, section se, student_section ss
 WHERE cl.course_id = ? AND cl.class_id = se.class_id AND se.fac_id = ? AND se.section_id = ss.section_id AND ss.grade <> 'IN'
 GROUP BY ss.grade
 
 -- iv
-SELECT ss.grade, count(*)
+SELECT ss.grade, count(*) AS cnt
 FROM class cl, section se, student_section ss
 WHERE cl.course_id = ? AND cl.class_id = se.class_id AND se.section_id = ss.section_id AND ss.grade <> 'IN'
 GROUP BY ss.grade
 
 -- v
-SELECT SUM(con.grade_num) / count(*)
+SELECT SUM(con.grade_num) / count(*) AS grade
 FROM class cl, section se, student_section ss, conversion con
 WHERE cl.course_id = ? AND cl.class_id = se.class_id AND se.fac_id = ? AND se.section_id = ss.section_id AND ss.grade <> 'IN' AND ss.grade = con.grade_letter
 
