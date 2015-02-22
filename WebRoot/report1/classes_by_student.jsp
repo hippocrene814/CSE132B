@@ -43,8 +43,6 @@
 
                     pstmt.setInt(1, Integer.parseInt(request.getParameter("show_ssn")));
                     rs2 = pstmt.executeQuery();
-                    System.out.println("haha");
-                    System.out.println(rs2);
 
                     // Commit transaction
                     conn.commit();
@@ -59,11 +57,9 @@
                     <th>Title </th>
                     <th>Course Id </th>
                     </tr>
-                    <%-- -------- Iteration Code2 -------- --%>
                     <%
                         // Iterate over the ResultSet
                         while (rs2.next()) {
-                        System.out.println("unit : " + rs2.getInt("unit"));
                     %>
                     <tr>
                         <td>
@@ -103,7 +99,6 @@
             <input type="hidden" name="action" value="show_class"/>
             <!-- Add an HTML table header row to format the results -->
             <select name="show_ssn">
-            <%-- -------- Iteration Code -------- --%>
             <%
                 // Iterate over the ResultSet
                 while (rs.next()) {

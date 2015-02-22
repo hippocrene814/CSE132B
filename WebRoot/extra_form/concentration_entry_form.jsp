@@ -59,7 +59,6 @@
                     // Begin transaction
                     conn.setAutoCommit(false);
 
-					System.out.println("haha");
                     // Create the prepared statement and use it to
                     // UPDATE student values in the Students table.
                     pstmt = conn
@@ -68,7 +67,6 @@
                     pstmt.setString(1, request.getParameter("con_name"));
                     pstmt.setInt(2, Integer.parseInt(request.getParameter("dep_id")));
                     pstmt.setInt(3, Integer.parseInt(request.getParameter("con_id")));
-                    System.out.println(request.getParameter("con_id"));
                     int rowCount = pstmt.executeUpdate();
 
                     // Commit transaction

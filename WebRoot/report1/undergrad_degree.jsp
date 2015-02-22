@@ -1,7 +1,7 @@
 <html>
 
 <body>
-<h2>Undergrad Degree</h2>
+<h2>Classes Taken by Student</h2>
 <table>
     <tr>
         <td valign="top">
@@ -17,6 +17,7 @@
             Connection conn = null;
             PreparedStatement pstmt = null;
             ResultSet rs = null;
+            ResultSet rs2 = null;
 
             try {
                 // Registering Postgresql JDBC driver with the DriverManager
@@ -28,70 +29,72 @@
                     "user=postgres&password=wizard");
             %>
 
-            <%-- -------- INSERT Code -------- --%>
             <%
                 String action = request.getParameter("action");
                 // Check if an insertion is requested
-                if (action != null && action.equals("insert")) {
+                if (action != null && action.equals("show_undergrad_degree")) {
 
                     // Begin transaction
                     conn.setAutoCommit(false);
 
                     // Create the prepared statement and use it to
                     pstmt = conn
-                    .prepareStatement("INSERT INTO category (cate_name) VALUES (?) ");
+                    .prepareStatement("SELECT dc.cate_id, dc.min_unit - SUM(ss.unit) AS remain_cate_unit FROM student st, student_section ss, section se, class cl, course co, degree de, degree_category dc WHERE st.ssn = ? AND st.stu_id = ss.stu_id AND ss.grade <> 'IN' AND ss.grade <> 'na' AND ss.section_id = se.section_id AND se.class_id = cl.class_id AND cl.course_id = co.course_id AND de.name = ? AND de.degree_id = dc.degree_id AND dc.cate_id = co.cate_id GROUP BY dc.cate_id, dc.min_unit");
 
-                    pstmt.setString(1, request.getParameter("cate_name"));
-                    int rowCount = pstmt.executeUpdate();
+                    pstmt.setInt(1, Integer.parseInt(request.getParameter("show_ssn")));
+                    pstmt.setString(2, request.getParameter("show_degree"));
+                    rs2 = pstmt.executeQuery();
 
                     // Commit transaction
                     conn.commit();
-                    conn.setAutoCommit(true);
-                }
-            %>
 
-            <%-- -------- UPDATE Code -------- --%>
-            <%
-                // Check if an update is requested
-                if (action != null && action.equals("update")) {
-
-                    // Begin transaction
-                    conn.setAutoCommit(false);
-
+                    %>
+                    <table border="1">
+                    <tr>
+                    <th>Category Id </th>
+                    <th>Remain Unit </th>
+                    </tr>
+                    <%
+                        // Iterate over the ResultSet
+                        while (rs2.next()) {
+                    %>
+                    <tr>
+                        <td>
+                            <%=rs2.getInt("cate_id")%>
+                        </td>
+                        <td>
+                            <%=rs2.getInt("remain_cate_unit")%>
+                        </td>
+                    </tr>
+                    <%
+                        }
+                    %>
+                    </table>
+                    <%
                     // Create the prepared statement and use it to
-                    // UPDATE student values in the Students table.
                     pstmt = conn
-                        .prepareStatement("UPDATE category SET cate_name = ? WHERE cate_id = ? ");
+                    .prepareStatement("SELECT de.total_min_unit - SUM(ss.unit) AS remain_unit FROM student st, student_section ss, degree de WHERE st.ssn = ? AND de.name = ? AND st.stu_id = ss.stu_id AND ss.grade <> 'IN' AND ss.grade <> 'na' GROUP BY de.total_min_unit");
 
-                    pstmt.setString(1, request.getParameter("cate_name"));
-                    pstmt.setInt(2, Integer.parseInt(request.getParameter("cate_id")));
-                    int rowCount = pstmt.executeUpdate();
+                    pstmt.setInt(1, Integer.parseInt(request.getParameter("show_ssn")));
+                    pstmt.setString(2, request.getParameter("show_degree"));
+                    rs2 = pstmt.executeQuery();
 
                     // Commit transaction
                     conn.commit();
                     conn.setAutoCommit(true);
-                }
-            %>
-
-            <%-- -------- DELETE Code -------- --%>
-            <%
-                // Check if a delete is requested
-                if (action != null && action.equals("delete")) {
-
-                    // Begin transaction
-                    conn.setAutoCommit(false);
-
-                    // Create the prepared statement and use it to
-                    // DELETE students FROM the Students table.
-                    pstmt = conn
-                        .prepareStatement("DELETE FROM category WHERE cate_id = ?");
-
-                    pstmt.setInt(1, Integer.parseInt(request.getParameter("cate_id")));
-                    int rowCount = pstmt.executeUpdate();
-
-                    // Commit transaction
-                    conn.commit();
-                    conn.setAutoCommit(true);
+                    %>
+                    Remain Unit:
+                    <%
+                        // Iterate over the ResultSet
+                        while (rs2.next()) {
+                            System.out.println("unit : " + rs2.getInt("remain_unit"));
+                    %>
+                        <%=rs2.getInt("remain_unit")%>
+                    <%
+                        }
+                    %>
+                    </table>
+                <%
                 }
             %>
 
@@ -101,62 +104,44 @@
                 Statement statement = conn.createStatement();
 
                 // Use the created statement to SELECT
-                rs = statement.executeQuery("SELECT * FROM category ORDER BY cate_id");
+                rs = statement.executeQuery("SELECT s.ssn, s.first_name AS first, s.middle_name AS middle, s.last_name AS last FROM student s, student_enrollment se WHERE s.stu_id = se.stu_id AND se.year = 2009 AND se.quarter = 'SPRING'AND NOT EXISTS ( SELECT * FROM grad g WHERE s.stu_id = g.stu_id )");
             %>
-
+            <hr>
+            <form action="undergrad_degree.jsp" method="POST">
+            <input type="hidden" name="action" value="show_undergrad_degree"/>
             <!-- Add an HTML table header row to format the results -->
-            <table border="1">
-            <tr>
-                <th>ID</th>
-                <th>Name</th>
-            </tr>
-
-            <tr>
-                <form action="category_entry_form.jsp" method="POST">
-                    <input type="hidden" name="action" value="insert"/>
-                    <th>&nbsp;</th>
-                    <th><input value="" name="cate_name" size="10"/></th>
-                    <th><input type="submit" value="Insert"/></th>
-                </form>
-            </tr>
-
-            <%-- -------- Iteration Code -------- --%>
+            <select name="show_ssn">
             <%
                 // Iterate over the ResultSet
                 while (rs.next()) {
-            %>
-            <tr>
-                <form action="category_entry_form.jsp" method="POST">
-                    <input type="hidden" name="action" value="update"/>
-                    <input type="hidden" name="cate_id" value="<%=rs.getInt("cate_id")%>"/>
-
-                <td>
-                    <%=rs.getInt("cate_id")%>
-                </td>
-
-                <td>
-                    <input value="<%=rs.getString("cate_name")%>" name="cate_name" size="15"/>
-                </td>
-
-                <%-- Button --%>
-                <td><input type="submit" value="Update"></td>
-                </form>
-                <form action="category_entry_form.jsp" method="POST">
-                    <input type="hidden" name="action" value="delete"/>
-                    <input type="hidden" name="cate_id" value="<%=rs.getInt("cate_id")%>"/>
-                    <%-- Button --%>
-                <td><input type="submit" value="Delete"/></td>
-                </form>
-            </tr>
-            <%
+                %>
+                <option value='<%=rs.getInt("ssn")%>'>
+                        <%=rs.getInt("ssn")%>, <%=rs.getString("last")%>, <%=rs.getString("middle")%>, <%=rs.getString("first")%>
+                </option>
+                <%
                 }
             %>
+            </select>
+            <select name="show_degree">
+            <%
+                rs = statement.executeQuery("SELECT name, type FROM degree WHERE type = 'BE' OR type = 'BA'");
+                // Iterate over the ResultSet
+                while (rs.next()) {
+                %>
+                <option value='<%=rs.getString("name")%>'>
+                        <%=rs.getString("name")%>, <%=rs.getString("type")%>
+                </option>
+                <%
+                }
+            %>
+            </select>
+            <input type="submit" value="Submit"/>
+            </form>
 
             <%-- -------- Close Connection Code -------- --%>
             <%
                 // Close the ResultSet
                 rs.close();
-
                 // Close the Statement
                 statement.close();
 
@@ -178,6 +163,12 @@
                     } catch (SQLException e) { } // Ignore
                     rs = null;
                 }
+                if (rs2 != null) {
+                    try {
+                        rs2.close();
+                    } catch (SQLException e) { } // Ignore
+                    rs2 = null;
+                }
                 if (pstmt != null) {
                     try {
                         pstmt.close();
@@ -192,7 +183,6 @@
                 }
             }
             %>
-        </table>
         </td>
     </tr>
 </table>

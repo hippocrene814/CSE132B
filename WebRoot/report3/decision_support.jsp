@@ -47,7 +47,6 @@
                     pstmt.setInt(4, Integer.parseInt(request.getParameter("fac_id")));
 
                     rs = pstmt.executeQuery();
-                    System.out.println("haha");
 
                     // Commit transaction
                     conn.commit();
@@ -91,11 +90,9 @@
                         <th>Grade </th>
                         <th>Count </th>
                         </tr>
-                        <%-- -------- Iteration Code2 -------- --%>
                         <%
                             // Iterate over the ResultSet
                             while (rs.next()) {
-                            System.out.println("grade : " + rs.getString("grade"));
                         %>
                         <tr>
                             <td>
