@@ -140,9 +140,16 @@ SELECT st.first_name as first, st.middle_name as middle, st.last_name as last, s
 FROM student st, student_enrollment se
 WHERE st.stu_id = se.stu_id AND se.year = 2009 AND se.quarter = 'SPRING'
 
-SELECT s.section_id, c.course_id
-FROM section s, class c
-WHERE s.class_id = c.class_id AND c.year = 2009 AND c.quarter = 'SPRING'
+-- find conflict
+SELECT cl1.title, cl1.course_id, cl3.title, cl3.course_id
+FROM section se1, class cl1, meeting m1, class cl3
+WHERE se1.class_id = cl1.class_id AND m1.section_id = se1.section_id AND cl1.year = 2009 AND cl1.quarter = 'SPRING' AND cl3.class_id IN
+(
+    SELECT cl2.class_id
+    FROM student st, section se2, class cl2, student_section ss, meeting m2
+    WHERE st.ssn = ? AND st.stu_id = ss.stu_id AND cl2.year = 2009 AND cl2.quarter = 'SPRING' AND ss.section_id = se2.section_id AND se2.class_id = cl2.class_id AND se2.section_id = m2.section_id
+        AND NOT (m1.start_time > m2.end_time OR m1.end_time >= m2.start_time) AND m1.day = m2.day AND cl2.class_id <> cl1.class_id
+)
 
 7.
 SELECT st.stu_id
