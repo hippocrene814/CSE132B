@@ -1,17 +1,17 @@
 1.
 -- student info
-SELECT st.first_name as first, st.middle_name as middle, st.last_name as last, st.ssn as ssn
+SELECT st.first_name AS first, st.middle_name AS middle, st.last_name AS last, st.ssn AS ssn
 FROM student st, student_enrollment se
 WHERE st.stu_id = se.stu_id AND se.year = 2009 AND se.quarter = 'SPRING'
 
 -- current class
-SELECT ss.unit as unit, ss.section_id as section_id, c.class_id as class_id, c.title as title, c.course_id as course_id, c.year as year, c.quarter as quarter
+SELECT ss.unit AS unit, ss.section_id AS section_id, c.class_id AS class_id, c.title AS title, c.course_id AS course_id, c.year AS year, c.quarter AS quarter
 FROM student st, student_section ss, section se, class c
 WHERE st.ssn = ? AND st.stu_id = ss.stu_id AND ss.section_id = se.section_id AND se.class_id = c.class_id AND c.year = 2009 AND c.quarter = 'SPRING'
 
 2.
 -- class info
-SELECT cl.title as title, cl.year as year, cl.quarter as quarter, co.course_number as course_number
+SELECT cl.title AS title, cl.year AS year, cl.quarter AS quarter, co.course_number AS course_number
 FROM class cl, course co
 WHERE cl.course_id = co.course_id
 
@@ -22,7 +22,7 @@ WHERE cl.title = ? AND se.class_id = cl.class_id AND ss.section_id = se.section_
 
 3.
 -- student info
-SELECT st.first_name as first, st.middle_name as middle, st.last_name as last, st.ssn as ssn
+SELECT st.first_name AS first, st.middle_name AS middle, st.last_name AS last, st.ssn AS ssn
 FROM student st
 WHERE EXISTS (
     SELECT se.stu_id
@@ -37,13 +37,13 @@ WHERE st.ssn = ? AND st.stu_id = ss.stu_id AND ss.section_id = se.section_id AND
 ORDER BY cl.year, cl.quarter
 
 -- for GPA
-SELECT cl.year, cl.quarter, SUM(ss.unit * co.grade_num) / SUM(ss.unit)
+SELECT cl.year, cl.quarter, SUM(ss.unit * co.grade_num) / SUM(ss.unit) AS grade
 FROM student st, student_section ss, section se, class cl, conversion co
 WHERE st.ssn = ? AND st.stu_id = ss.stu_id AND ss.section_id = se.section_id AND se.class_id = cl.class_id AND ss.letter_su = 'letter' AND ss.grade <> 'IN' AND ss.grade = co.grade_letter
 GROUP BY cl.year, cl.quarter
 
 -- for total GPA
-SELECT SUM(ss.unit * co.grade_num) / SUM(ss.unit)
+SELECT SUM(ss.unit * co.grade_num) / SUM(ss.unit) AS grade
 FROM student st, student_section ss, section se, class cl, conversion co
 WHERE st.ssn = ? AND st.stu_id = ss.stu_id AND ss.section_id = se.section_id AND se.class_id = cl.class_id AND ss.letter_su = 'letter' AND ss.grade <> 'IN' AND ss.grade = co.grade_letter
 
