@@ -90,49 +90,57 @@ SELECT name, type
 FROM degree
 WHERE type = 'MS'
 
--- temp table temp1: con_id and unit
-SELECT cc.con_id, SUM(ss.unit) AS unit
-FROM student st, student_section ss, section se, class cl, course_concentration cc
-WHERE st.ssn = ? AND st.stu_id = ss.stu_id AND ss.grade <> 'IN' AND ss.grade <> 'na' AND ss.section_id = se.section_id AND se.class_id = cl.class_id AND cl.course_id = cc.course_id
-GROUP BY cc.con_id
--- temp table temp2: con_id and grade
-SELECT cc.con_id, SUM(ss.unit * co.grade_num) / SUM(ss.unit) AS grade
-FROM student st, student_section ss, section se, class cl, course_concentration cc, conversion co
-WHERE st.ssn = ? AND st.stu_id = ss.stu_id AND ss.letter_su = 'letter' AND ss.grade <> 'IN' AND ss.grade <> 'na' AND ss.section_id = se.section_id AND se.class_id = cl.class_id AND cl.course_id = cc.course_id
-    AND ss.grade = co.grade_letter
-GROUP BY cc.con_id
+-- -- temp table temp1: con_id and unit
+-- SELECT cc.con_id, SUM(ss.unit) AS unit
+-- FROM student st, student_section ss, section se, class cl, course_concentration cc
+-- WHERE st.ssn = ? AND st.stu_id = ss.stu_id AND ss.grade <> 'IN' AND ss.grade <> 'na' AND ss.section_id = se.section_id AND se.class_id = cl.class_id AND cl.course_id = cc.course_id
+-- GROUP BY cc.con_id
+-- -- temp table temp2: con_id and grade
+-- SELECT cc.con_id, SUM(ss.unit * co.grade_num) / SUM(ss.unit) AS grade
+-- FROM student st, student_section ss, section se, class cl, course_concentration cc, conversion co
+-- WHERE st.ssn = ? AND st.stu_id = ss.stu_id AND ss.letter_su = 'letter' AND ss.grade <> 'IN' AND ss.grade <> 'na' AND ss.section_id = se.section_id AND se.class_id = cl.class_id AND cl.course_id = cc.course_id
+--     AND ss.grade = co.grade_letter
+-- GROUP BY cc.con_id
 
--- concenctration completed (GPA issue, use intersect?)
-SELECT dc.con_id
-FROM degree de, degree_concentration dc, temp1, temp2
-WHERE de.name = ? AND de.degree_id = dc.degree_id AND dc.con_id = temp1.con_id AND dc.min_unit - temp1.unit <= 0 AND dc.con_id = temp2.con_id AND dc.min_grade - temp2.grade <= 0
+-- -- concenctration completed (GPA issue, use intersect?)
+-- SELECT dc.con_id
+-- FROM degree de, degree_concentration dc, temp1, temp2
+-- WHERE de.name = ? AND de.degree_id = dc.degree_id AND dc.con_id = temp1.con_id AND dc.min_unit - temp1.unit <= 0 AND dc.con_id = temp2.con_id AND dc.min_grade - temp2.grade <= 0
+
+-- use one query
+SELECT con.con_name ,dc.con_id, dc.min_unit, dc.min_grade
+FROM degree de, degree_concentration dc, concentration con
+WHERE de.name = 'EE' AND de.degree_id = dc.degree_id AND dc.con_id = con.con_id
+    AND dc.min_unit <= (
+        SELECT SUM(ss.unit) AS unit
+        FROM student st, student_section ss, section se, class cl, course_concentration cc
+        WHERE st.ssn = 234234231 AND st.stu_id = ss.stu_id AND ss.grade <> 'IN' AND ss.grade <> 'na' AND ss.section_id = se.section_id AND se.class_id = cl.class_id AND cl.course_id = cc.course_id AND cc.con_id = dc.con_id
+    ) AND dc.min_grade <= (
+        SELECT SUM(ss.unit * co.grade_num) / SUM(ss.unit) AS grade
+        FROM student st, student_section ss, section se, class cl, course_concentration cc, conversion co
+        WHERE st.ssn = 234234231 AND st.stu_id = ss.stu_id AND ss.letter_su = 'letter' AND ss.grade <> 'IN' AND ss.grade <> 'na' AND ss.section_id = se.section_id AND se.class_id = cl.class_id AND cl.course_id = cc.course_id
+            AND ss.grade = co.grade_letter AND cc.con_id = dc.con_id
+    )
 
 -- next available time. We treat the courses a student is taking this quarter as pass by default.
--- temp table temp3: con_id
-SELECT dc.con_id
-FROM degree de, degree_concentration
-WHERE de.name = ? AND de.degree_id = dc.degree_id
--- temp table temp4: course_id
-SELECT cl.course_id
-FROM student st, student_section ss, section se, class cl
-WHERE st.ssn = ? AND st.stu_id = ss.stu_id AND ss.section_id = se.section_id AND se.class_id = cl.class_id
--- temp table temp5: without next available time
-SELECT cc.con_id, cc.course_id
-FROM temp3, course_concentration cc
-WHERE temp3.con_id = cc.con_id AND NOT EXISTS (
-    SELECT *
-    FROM temp4
-    WHERE temp4.course_id = cc.course_id
-)
-ORDER BY cc.con_id
+-- -- One query to select all courses
+-- SELECT con.con_name ,dc.con_id, co.course_id, co.course_number
+-- FROM degree de, degree_concentration dc, concentration con, course co, course_concentration cc
+-- WHERE de.name = 'EE' AND de.degree_id = dc.degree_id AND dc.con_id = con.con_id AND con.con_id = cc.con_id AND cc.course_id = co.course_id
 
-SELECT temp5.con_id, temp5.course_id, cl1.year, cl1.quarter
-FROM temp5, class cl1, period pr1
-WHERE temp5.couse_id = cl1.course_id AND cl1.quarter = pr1.quarter AND cl1.year = pr1.year
-    AND NOT pr1.period_id > (
-        SELECT min(pr2.perion_id)
-        FROM class cl2, period pr2
-        WHERE cl2.course_id = cl1.course AND cl2.quarter = pr2.quarter AND cl2.year = pr2.year
+-- Next available time
+SELECT con.con_name ,dc.con_id, co.course_id, co.course_number, cl.title, cl.year, cl.quarter
+FROM degree de, degree_concentration dc, concentration con, course co, course_concentration cc, class cl, period pr
+WHERE de.name = 'EE' AND de.degree_id = dc.degree_id AND dc.con_id = con.con_id AND con.con_id = cc.con_id AND cc.course_id = co.course_id AND cl.course_id = co.course_id AND cl.year = pr.year AND cl.quarter = pr.quarter
+    AND co.course_id NOT IN (
+        SELECT cl2.course_id
+        FROM student st2, student_section ss2, section se2, class cl2
+        WHERE st2.ssn = 234234231 AND st2.stu_id = ss2.stu_id AND ss2.grade <> 'IN' AND ss2.grade <> 'na' AND ss2.section_id = se2.section_id AND se2.class_id = cl2.class_id
+    )
+    AND pr.period_id <= (
+        SELECT min(pr3.period_id)
+        FROM class cl3, period pr3
+        WHERE cl3.course_id = co.course_id AND cl3.year = pr3.year AND cl3.quarter = pr3.quarter
     )
 
 6.
