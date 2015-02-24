@@ -49,7 +49,7 @@ WHERE st.ssn = ? AND st.stu_id = ss.stu_id AND ss.section_id = se.section_id AND
 
 4.
 -- undergrad info
-SELECT s.ssn, s.first_name, s.middle_name, s.last_name
+SELECT s.ssn, s.first_name AS first, s.middle_name AS middle, s.last_name AS last
 FROM student s, student_enrollment se
 WHERE s.stu_id = se.stu_id AND se.year = 2009 AND se.quarter = 'SPRING'AND NOT EXISTS (
 SELECT *
