@@ -105,15 +105,15 @@ GROUP BY cc.con_id
 -- concenctration completed (GPA issue, use intersect?)
 SELECT dc.con_id
 FROM degree de, degree_concentration dc, temp1, temp2
-WHERE de.degree_id = ? AND de.degree_id = dc.degree_id AND dc.con_id = temp1.con_id AND dc.min_unit - temp1.unit <= 0 AND dc.con_id = temp2.con_id AND dc.min_grade - temp2.grade <= 0
+WHERE de.name = ? AND de.degree_id = dc.degree_id AND dc.con_id = temp1.con_id AND dc.min_unit - temp1.unit <= 0 AND dc.con_id = temp2.con_id AND dc.min_grade - temp2.grade <= 0
 
 -- next available time. We treat the courses a student is taking this quarter as pass by default.
 -- temp table temp3: con_id
 SELECT dc.con_id
 FROM degree de, degree_concentration
-WHERE de.degree_id = ?
+WHERE de.name = ? AND de.degree_id = dc.degree_id
 -- temp table temp4: course_id
-SELECT co.course_id
+SELECT cl.course_id
 FROM student st, student_section ss, section se, class cl
 WHERE st.ssn = ? AND st.stu_id = ss.stu_id AND ss.section_id = se.section_id AND se.class_id = cl.class_id
 -- temp table temp5: without next available time
@@ -129,28 +129,41 @@ ORDER BY cc.con_id
 SELECT temp5.con_id, temp5.course_id, cl1.year, cl1.quarter
 FROM temp5, class cl1, period pr1
 WHERE temp5.couse_id = cl1.course_id AND cl1.quarter = pr1.quarter AND cl1.year = pr1.year
-    AND NOT EXISTS (
-        SELECT *
+    AND NOT pr1.period_id > (
+        SELECT min(pr2.perion_id)
         FROM class cl2, period pr2
-        WHERE cl2.course_id = cl1.course AND cl2.quarter = pr2.quarter AND cl2.year = pr2.year AND pr1.period_id > pr2.period_id
+        WHERE cl2.course_id = cl1.course AND cl2.quarter = pr2.quarter AND cl2.year = pr2.year
     )
 
 6.
-SELECT st.first_name as first, st.middle_name as middle, st.last_name as last, st.ssn as ssn
+SELECT st.first_name AS first, st.middle_name AS middle, st.last_name AS last, st.ssn
 FROM student st, student_enrollment se
 WHERE st.stu_id = se.stu_id AND se.year = 2009 AND se.quarter = 'SPRING'
 
 -- find conflict
-SELECT cl1.title, cl1.course_id, cl2.title, cl2.course_id
-FROM section se1, class cl1, meeting m1, section se2, class cl2, meeting m2, student st, student_section ss
-WHERE se1.class_id = cl1.class_id AND m1.section_id = se1.section_id AND cl1.year = 2009 AND cl1.quarter = 'SPRING'
-        AND st.ssn = 234234231 AND st.stu_id = ss.stu_id AND cl2.year = 2009 AND cl2.quarter = 'SPRING' AND ss.section_id = se2.section_id AND se2.class_id = cl2.class_id AND se2.section_id = m2.section_id
-        AND NOT (m1.start_time > m2.end_time OR m1.end_time >= m2.start_time) AND m1.day = m2.day AND cl2.class_id <> cl1.class_id
+SELECT cl1.title AS not_class_title, cl1.course_id AS not_course_id, m1.start_time AS conflict_start, m1.end_time AS conflict_end, cl2.title AS conflict_class_title, cl2.course_id AS conflict_course_id, m2.start_time AS conflict_start, m2.end_time AS conflict_end
+FROM student st, section se1, class cl1, meeting m1, section se2, class cl2, meeting m2, student_section ss2
+WHERE st.ssn = 323112801 AND st.stu_id = ss2.stu_id AND ss2.section_id = se2.section_id AND se2.class_id = cl2.class_id AND m2.section_id = se2.section_id AND cl2.year = 2009 AND cl2.quarter = 'SPRING'
+        AND se1.class_id = cl1.class_id AND m1.section_id = se1.section_id AND cl1.year = 2009 AND cl1.quarter = 'SPRING'
+        AND CAST(m2.start_time AS Time) <= CAST(m1.end_time AS Time) AND CAST(m2.end_time AS Time) >= CAST(m1.start_time AS Time) AND m2.day = m1.day AND m2.section_id <> m1.section_id
 
 7.
-SELECT st.stu_id
-FROM class cl, section se, student_section ss, student st
-WHERE cl.class_id = ? AND se.class_id = cl.class_id AND ss.section_id = se.section_id AND ss.stu_id = st.stu_id
+-- get all section of current quarter
+SELECT se.section_id, cl.course_id
+FROM section se, class cl
+WHERE se.class_id = cl.class_id AND cl.year = 2009 AND cl.quarter = 'SPRING'
+
+-- put for loop out of sql. already have day-1 and date-'2015-02-07'.
+SELECT rp.start_time AS select_start_time, rp.end_time AS select_end_time
+FROM review_period rp
+WHERE NOT EXISTS (
+    SELECT *
+    FROM student_section ss1, student_section ss2, section se2, class cl2, review r2, meeting m2
+    WHERE ss1.section_id = 11 AND ss1.stu_id = ss2.stu_id AND ss2.section_id = r2.section_id AND ss2.section_id = m2.section_id AND ss2.section_id = se2.section_id AND se2.class_id = cl2.class_id AND cl2.year = 2009 AND cl2.quarter = 'SPRING'
+        AND (r2.review_date = '2015-02-07' AND (CAST(r2.start_time AS Time) < CAST(rp.end_time AS Time) AND CAST(r2.end_time AS Time) > CAST(rp.start_time AS Time))
+        OR m2.day = 1 AND (CAST(m2.start_time AS Time) < CAST(rp.end_time AS Time) AND CAST(m2.end_time AS Time) > CAST(rp.start_time AS Time)))
+)
+ORDER BY rp.start_time
 
 8.
 -- ii
