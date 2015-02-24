@@ -141,7 +141,7 @@ FROM student st, student_enrollment se
 WHERE st.stu_id = se.stu_id AND se.year = 2009 AND se.quarter = 'SPRING'
 
 -- find conflict
-SELECT cl1.title AS not_class_title, cl1.course_id AS not_course_id, m1.start_time AS conflict_start, m1.end_time AS conflict_end, cl2.title AS conflict_class_title, cl2.course_id AS conflict_course_id, m2.start_time AS conflict_start, m2.end_time AS conflict_end
+SELECT cl1.title AS not_class_title, cl1.course_id AS not_course_id, m1.start_time AS no_start, m1.end_time AS no_end, cl2.title AS conflict_class_title, cl2.course_id AS conflict_course_id, m2.start_time AS conflict_start, m2.end_time AS conflict_end
 FROM student st, section se1, class cl1, meeting m1, section se2, class cl2, meeting m2, student_section ss2
 WHERE st.ssn = 323112801 AND st.stu_id = ss2.stu_id AND ss2.section_id = se2.section_id AND se2.class_id = cl2.class_id AND m2.section_id = se2.section_id AND cl2.year = 2009 AND cl2.quarter = 'SPRING'
         AND se1.class_id = cl1.class_id AND m1.section_id = se1.section_id AND cl1.year = 2009 AND cl1.quarter = 'SPRING'
