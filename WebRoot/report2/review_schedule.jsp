@@ -38,9 +38,11 @@
 
                     // Create the prepared statement and use it to
                     pstmt = conn
-                    .prepareStatement("SELECT ss.unit as unit, ss.section_id as section_id, c.class_id as class_id, c.title as title, c.course_id as course_id, c.year as year, c.quarter as quarter FROM student st, student_section ss, section se, class c WHERE st.ssn = ? AND st.stu_id = ss.stu_id AND ss.section_id = se.section_id AND se.class_id = c.class_id AND c.year = 2009 AND c.quarter = 'SPRING'");
+                    .prepareStatement("SELECT aval_date::date, rp.start_time AS select_start_time, rp.end_time AS select_end_time FROM review_period rp, generate_series(?::date, ?::date, '1 day'::interval) aval_date WHERE NOT EXISTS ( SELECT * FROM student_section ss1, student_section ss2, section se2, class cl2, review r2, meeting m2 WHERE ss1.section_id = ? AND ss1.stu_id = ss2.stu_id AND ss2.section_id = r2.section_id AND ss2.section_id = m2.section_id AND ss2.section_id = se2.section_id AND se2.class_id = cl2.class_id AND cl2.year = 2009 AND cl2.quarter = 'SPRING' AND (r2.review_date::date = aval_date AND (CAST(r2.start_time AS Time) < CAST(rp.end_time AS Time) AND CAST(r2.end_time AS Time) > CAST(rp.start_time AS Time)) OR m2.day = extract(dow from aval_date::timestamp) AND (CAST(m2.start_time AS Time) < CAST(rp.end_time AS Time) AND CAST(m2.end_time AS Time) > CAST(rp.start_time AS Time)))) ORDER BY aval_date::date, rp.start_time");
 
-                    pstmt.setInt(1, Integer.parseInt(request.getParameter("show_section")));
+                    pstmt.setString(1, request.getParameter("review_start_date"));
+                    pstmt.setString(2, request.getParameter("review_end_date"));
+                    pstmt.setInt(3, Integer.parseInt(request.getParameter("show_section")));
                     rs2 = pstmt.executeQuery();
 
                     // Commit transaction
@@ -50,11 +52,9 @@
                     %>
                     <table border="1">
                     <tr>
-                    <th>Section Id </th>
-                    <th>Unit </th>
-                    <th>Class Id </th>
-                    <th>Title </th>
-                    <th>Course Id </th>
+                    <th>Available Date </th>
+                    <th>Start Time </th>
+                    <th>End Time </th>
                     </tr>
                     <%
                         // Iterate over the ResultSet
@@ -62,19 +62,13 @@
                     %>
                     <tr>
                         <td>
-                            <%=rs2.getInt("section_id")%>
+                            <%=rs2.getString("aval_date")%>
                         </td>
                         <td>
-                            <%=rs2.getInt("unit")%>
+                            <%=rs2.getString("select_start_time")%>
                         </td>
                         <td>
-                            <%=rs2.getInt("class_id")%>
-                        </td>
-                        <td>
-                            <%=rs2.getString("title")%>
-                        </td>
-                        <td>
-                            <%=rs2.getInt("course_id")%>
+                            <%=rs2.getString("select_end_time")%>
                         </td>
                     </tr>
                     <%

@@ -154,36 +154,29 @@ FROM section se, class cl
 WHERE se.class_id = cl.class_id AND cl.year = 2009 AND cl.quarter = 'SPRING'
 
 -- put for loop out of sql. already have day-1 and date-'2015-02-07'.
-SELECT rp.start_time AS select_start_time, rp.end_time AS select_end_time
-FROM review_period rp
+-- SELECT rp.start_time AS select_start_time, rp.end_time AS select_end_time
+-- FROM review_period rp
+-- WHERE NOT EXISTS (
+--     SELECT *
+--     FROM student_section ss1, student_section ss2, section se2, class cl2, review r2, meeting m2
+--     WHERE ss1.section_id = 11 AND ss1.stu_id = ss2.stu_id AND ss2.section_id = r2.section_id AND ss2.section_id = m2.section_id AND ss2.section_id = se2.section_id AND se2.class_id = cl2.class_id AND cl2.year = 2009 AND cl2.quarter = 'SPRING'
+--         AND (r2.review_date = '2015-02-07' AND (CAST(r2.start_time AS Time) < CAST(rp.end_time AS Time) AND CAST(r2.end_time AS Time) > CAST(rp.start_time AS Time))
+--         OR m2.day = 1 AND (CAST(m2.start_time AS Time) < CAST(rp.end_time AS Time) AND CAST(m2.end_time AS Time) > CAST(rp.start_time AS Time)))
+-- )
+-- ORDER BY rp.start_time
+-- inner loop
+SELECT aval_date::date, rp.start_time AS select_start_time, rp.end_time AS select_end_time
+FROM review_period rp, generate_series('2015-02-06','2015-02-08', '1 day'::interval) aval_date
+-- FROM review_period rp, generate_series(?::date, ?::date, '1 day'::interval) aval_date
 WHERE NOT EXISTS (
     SELECT *
     FROM student_section ss1, student_section ss2, section se2, class cl2, review r2, meeting m2
     WHERE ss1.section_id = 11 AND ss1.stu_id = ss2.stu_id AND ss2.section_id = r2.section_id AND ss2.section_id = m2.section_id AND ss2.section_id = se2.section_id AND se2.class_id = cl2.class_id AND cl2.year = 2009 AND cl2.quarter = 'SPRING'
-        AND (r2.review_date = '2015-02-07' AND (CAST(r2.start_time AS Time) < CAST(rp.end_time AS Time) AND CAST(r2.end_time AS Time) > CAST(rp.start_time AS Time))
-        OR m2.day = 1 AND (CAST(m2.start_time AS Time) < CAST(rp.end_time AS Time) AND CAST(m2.end_time AS Time) > CAST(rp.start_time AS Time)))
+    -- WHERE ss1.section_id = ? AND ss1.stu_id = ss2.stu_id AND ss2.section_id = r2.section_id AND ss2.section_id = m2.section_id AND ss2.section_id = se2.section_id AND se2.class_id = cl2.class_id AND cl2.year = 2009 AND cl2.quarter = 'SPRING'
+        AND (r2.review_date::date = aval_date AND (CAST(r2.start_time AS Time) < CAST(rp.end_time AS Time) AND CAST(r2.end_time AS Time) > CAST(rp.start_time AS Time))
+        OR m2.day = extract(dow from aval_date::timestamp) AND (CAST(m2.start_time AS Time) < CAST(rp.end_time AS Time) AND CAST(m2.end_time AS Time) > CAST(rp.start_time AS Time)))
 )
-ORDER BY rp.start_time
-
--- not use for loop outside - under construction
-SELECT rp.start_time AS select_start_time, rp.end_time AS select_end_time
-FROM review_period rp
-WHERE NOT EXISTS (
-    SELECT *
-    FROM student_section ss1, student_section ss2, section se2, class cl2, review r2, meeting m2
-    WHERE ss1.section_id = 11 AND ss1.stu_id = ss2.stu_id AND ss2.section_id = r2.section_id AND ss2.section_id = m2.section_id AND ss2.section_id = se2.section_id AND se2.class_id = cl2.class_id AND cl2.year = 2009 AND cl2.quarter = 'SPRING'
-        AND (r2.review_date = '2015-02-07' AND (CAST(r2.start_time AS Time) < CAST(rp.end_time AS Time) AND CAST(r2.end_time AS Time) > CAST(rp.start_time AS Time))
-        OR m2.day = 1 AND (CAST(m2.start_time AS Time) < CAST(rp.end_time AS Time) AND CAST(m2.end_time AS Time) > CAST(rp.start_time AS Time)))
-)
-ORDER BY rp.start_time
---
-SELECT review_date, extract(dow from review_date::timestamp)
-FROM review
-WHERE review_date BETWEEN '2014-01-01' AND '2014-03-01'
---
-SELECT *
-FROM review
-WHERE review_date BETWEEN '2014-01-01' AND '2014-03-01'
+ORDER BY aval_date::date, rp.start_time
 
 8.
 -- ii
