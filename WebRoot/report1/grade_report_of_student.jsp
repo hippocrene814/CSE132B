@@ -144,6 +144,7 @@
                     conn.commit();
                     conn.setAutoCommit(true);
                     %>
+                    <hr>
                     Overall GPA:
                     <%
                         // Iterate over the ResultSet

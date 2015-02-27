@@ -169,6 +169,12 @@ WHERE st.ssn = 323112801 AND st.stu_id = ss2.stu_id AND ss2.section_id = se2.sec
         AND se1.class_id = cl1.class_id AND m1.section_id = se1.section_id AND cl1.year = 2009 AND cl1.quarter = 'SPRING'
         AND CAST(m2.start_time AS Time) <= CAST(m1.end_time AS Time) AND CAST(m2.end_time AS Time) >= CAST(m1.start_time AS Time) AND m2.day = m1.day AND m2.section_id <> m1.section_id
 
+SELECT cl1.title AS not_class_title, cl1.course_id AS not_course_id, m1.day AS no_day, m1.start_time AS no_start, m1.end_time AS no_end, cl2.title AS conflict_class_title, cl2.course_id AS conflict_course_id, m2.start_time AS conflict_start, m2.end_time AS conflict_end
+FROM student st, section se1, class cl1, meeting m1, section se2, class cl2, meeting m2, student_section ss2
+WHERE st.ssn = 323112801 AND st.stu_id = ss2.stu_id AND ss2.section_id = se2.section_id AND se2.class_id = cl2.class_id AND m2.section_id = se2.section_id AND cl2.year = 2009 AND cl2.quarter = 'SPRING'
+        AND se1.class_id = cl1.class_id AND m1.section_id = se1.section_id AND cl1.year = 2009 AND cl1.quarter = 'SPRING'
+        AND CAST(m2.start_time AS Time) <= CAST(m1.end_time AS Time) AND CAST(m2.end_time AS Time) >= CAST(m1.start_time AS Time) AND m2.day = m1.day AND m2.section_id <> m1.section_id
+
 7.
 -- get all section of current quarter
 SELECT se.section_id, cl.course_id
@@ -220,7 +226,7 @@ WHERE cl.course_id = ? AND cl.class_id = se.class_id AND se.section_id = ss.sect
 GROUP BY ss.grade
 
 -- v
-SELECT SUM(con.grade_num) / count(*) AS grade
+SELECT SUM(ss.unit * con.grade_num) / SUM(ss.unit) AS grade
 FROM class cl, section se, student_section ss, conversion con
 WHERE cl.course_id = ? AND cl.class_id = se.class_id AND se.fac_id = ? AND se.section_id = ss.section_id AND ss.grade <> 'IN' AND ss.grade = con.grade_letter
 

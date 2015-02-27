@@ -114,7 +114,7 @@
 
                     // Create the prepared statement and use it to
                     pstmt = conn
-                    .prepareStatement("SELECT SUM(con.grade_num) / count(*) AS grade FROM class cl, section se, student_section ss, conversion con WHERE cl.course_id = ? AND cl.class_id = se.class_id AND se.fac_id = ? AND se.section_id = ss.section_id AND ss.grade <> 'IN' AND ss.grade = con.grade_letter");
+                    .prepareStatement("SELECT SUM(ss.unit * con.grade_num) / SUM(ss.unit) AS grade FROM class cl, section se, student_section ss, conversion con WHERE cl.course_id = ? AND cl.class_id = se.class_id AND se.fac_id = ? AND se.section_id = ss.section_id AND ss.grade <> 'IN' AND ss.grade = con.grade_letter");
 
                     pstmt.setInt(1, Integer.parseInt(request.getParameter("course_id")));
                     pstmt.setInt(2, Integer.parseInt(request.getParameter("fac_id")));
