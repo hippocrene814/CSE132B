@@ -126,11 +126,9 @@
                     <th><input value="" name="name" size="15"/></th>
                     <th>
                       <select name="type">
-                        <option value="ba">BA</option>
-                        <option value="be">BE</option>
-                        <option value="ms">MS</option>
-                        <option value="ma">MA</option>
-                        <option value="phd">PHD</option>
+                        <option value="bs">bs</option>
+                        <option value="ms">ms</option>
+                        <option value="phd">phd</option>
                       </select>
                     </th>
                     <th><input value="" name="total_min_unit" size="15"/></th>

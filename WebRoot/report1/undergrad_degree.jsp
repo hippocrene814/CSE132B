@@ -39,7 +39,7 @@
 
                     // Create the prepared statement and use it to
                     pstmt = conn
-                    .prepareStatement("SELECT dc.cate_id, dc.min_unit - SUM(ss.unit) AS remain_cate_unit FROM student st, student_section ss, section se, class cl, course co, degree de, degree_category dc WHERE st.ssn = ? AND st.stu_id = ss.stu_id AND ss.grade <> 'IN' AND ss.grade <> 'na' AND ss.section_id = se.section_id AND se.class_id = cl.class_id AND cl.course_id = co.course_id AND de.name = ? AND de.degree_id = dc.degree_id AND dc.cate_id = co.cate_id GROUP BY dc.cate_id, dc.min_unit");
+                    .prepareStatement("SELECT dc.cate_id, dc.min_unit - SUM(ss.unit) AS remain_cate_unit FROM student st, student_section ss, degree de, degree_category dc, section_category sc WHERE st.ssn = ? AND st.stu_id = ss.stu_id AND ss.grade <> 'IN' AND ss.grade <> 'na' AND ss.section_id = sc.section_id AND de.name = ? AND de.degree_id = dc.degree_id GROUP BY dc.cate_id, dc.min_unit");
 
                     pstmt.setInt(1, Integer.parseInt(request.getParameter("show_ssn")));
                     pstmt.setString(2, request.getParameter("show_degree"));
@@ -124,7 +124,7 @@
             </select>
             <select name="show_degree">
             <%
-                rs = statement.executeQuery("SELECT name, type FROM degree WHERE type = 'BE' OR type = 'BA'");
+                rs = statement.executeQuery("SELECT name, type FROM degree WHERE type = 'bs'");
                 // Iterate over the ResultSet
                 while (rs.next()) {
                 %>
