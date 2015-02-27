@@ -1,7 +1,7 @@
 <html>
 
 <body>
-<h2>Section Entry Form</h2>
+<h2>Section Concentration Entry Form</h2>
 <table>
     <tr>
         <td valign="top">
@@ -39,13 +39,10 @@
 
                     // Create the prepared statement and use it to
                     pstmt = conn
-                    .prepareStatement("INSERT INTO section (section_limit, class_id, fac_id, section_id) VALUES (?, ?, ?, ?)");
+                    .prepareStatement("INSERT INTO section_concentration (section_id, con_id) VALUES (?, ?)");
 
-                    pstmt.setInt(1, Integer.parseInt(request.getParameter("section_limit")));
-                    pstmt.setInt(2, Integer.parseInt(request.getParameter("class_id")));
-                    pstmt.setInt(3, Integer.parseInt(request.getParameter("fac_id")));
-                    pstmt.setInt(4, Integer.parseInt(request.getParameter("section_id")));
-
+                    pstmt.setInt(1, Integer.parseInt(request.getParameter("section_id")));
+                    pstmt.setInt(2, Integer.parseInt(request.getParameter("con_id")));
                     int rowCount = pstmt.executeUpdate();
 
                     // Commit transaction
@@ -63,13 +60,11 @@
                     conn.setAutoCommit(false);
 
                     pstmt = conn
-                        .prepareStatement("UPDATE section SET section_limit = ?, class_id = ?, fac_id = ? WHERE section_id = ? ");
+                        .prepareStatement("UPDATE section_concentration SET section_id = ?, con_id = ? WHERE se_con_id = ? ");
 
-                    pstmt.setInt(1, Integer.parseInt(request.getParameter("section_limit")));
-                    pstmt.setInt(2, Integer.parseInt(request.getParameter("class_id")));
-                    pstmt.setInt(3, Integer.parseInt(request.getParameter("fac_id")));
-                    pstmt.setInt(4, Integer.parseInt(request.getParameter("section_id")));
-
+                    pstmt.setInt(1, Integer.parseInt(request.getParameter("section_id")));
+                    pstmt.setInt(2, Integer.parseInt(request.getParameter("con_id")));
+                    pstmt.setInt(3, Integer.parseInt(request.getParameter("se_con_id")));
                     int rowCount = pstmt.executeUpdate();
 
                     // Commit transaction
@@ -89,9 +84,9 @@
                     // Create the prepared statement and use it to
                     // DELETE students FROM the Students table.
                     pstmt = conn
-                        .prepareStatement("DELETE FROM section WHERE section_id = ?");
+                        .prepareStatement("DELETE FROM section_concentration WHERE se_con_id = ?");
 
-                    pstmt.setInt(1, Integer.parseInt(request.getParameter("section_id")));
+                    pstmt.setInt(1, Integer.parseInt(request.getParameter("se_con_id")));
                     int rowCount = pstmt.executeUpdate();
 
                     // Commit transaction
@@ -106,88 +101,56 @@
                 Statement statement = conn.createStatement();
 
                 // Use the created statement to SELECT
-                rs = statement.executeQuery("SELECT * FROM section ORDER BY section_id");
-                rs = statement.executeQuery("SELECT * FROM section s, class c WHERE s.class_id = c.class_id ORDER BY section_id");
+                rs = statement.executeQuery("SELECT * FROM section_concentration ORDER BY se_con_id");
             %>
 
-            <h4>Insert</h4>
             <!-- Add an HTML table header row to format the results -->
             <table border="1">
             <tr>
                 <th>ID</th>
-                <th>Class Id</th>
-                <th>Faculty Id</th>
-                <th>Number Limit</th>
+                <th>Section Id</th>
+                <th>Concentration Id</th>
             </tr>
 
             <tr>
-                <form action="section_entry_form.jsp" method="POST">
+                <form action="section_concentration_entry_form.jsp" method="POST">
                     <input type="hidden" name="action" value="insert"/>
-                    <th><input value="" name="section_id" size="15"/></th>
-                    <th><input value="" name="class_id" size="15"/></th>
-                    <th><input value="" name="fac_id" size="15"/></th>
-                    <th><input value="" name="section_limit" size="15"/></th>
-
+                    <th>&nbsp;</th>
+                    <th><input value="" name="section_id" size="10"/></th>
+                    <th><input value="" name="con_id" size="10"/></th>
                     <th><input type="submit" value="Insert"/></th>
                 </form>
             </tr>
-            </table>
-            <hr>
-            <h4>Modify</h4>
-            <table border="1">
-            <tr>
-                <th>Section ID</th>
-                <th>Class Id</th>
-                <th>Faculty Id</th>
-                <th>Number Limit</th>
-                <th>Class Title</th>
-                <th>Year</th>
-                <th>Quarter</th>
-            </tr>
+
             <%-- -------- Iteration Code -------- --%>
             <%
                 // Iterate over the ResultSet
                 while (rs.next()) {
             %>
+
             <tr>
-                <form action="section_entry_form.jsp" method="POST">
+                <form action="section_concentration_entry_form.jsp" method="POST">
                     <input type="hidden" name="action" value="update"/>
-                    <input type="hidden" name="section_id" value="<%=rs.getInt("section_id")%>"/>
+                    <input type="hidden" name="se_con_id" value="<%=rs.getInt("se_con_id")%>"/>
 
                 <td>
-                    <%=rs.getInt("section_id")%>
+                    <%=rs.getInt("se_con_id")%>
                 </td>
 
                 <td>
-                    <input value="<%=rs.getInt("class_id")%>" name="class_id" size="15"/>
+                    <input value="<%=rs.getInt("section_id")%>" name="section_id" size="15"/>
                 </td>
 
                 <td>
-                    <input value="<%=rs.getInt("fac_id")%>" name="fac_id" size="15"/>
-                </td>
-
-                <td>
-                    <input value="<%=rs.getInt("section_limit")%>" name="section_limit" size="15"/>
-                </td>
-
-                <td>
-                    <%=rs.getString("title")%>
-                </td>
-
-                <td>
-                    <%=rs.getInt("year")%>
-                </td>
-
-                <td>
-                    <%=rs.getString("quarter")%>
+                    <input value="<%=rs.getInt("con_id")%>" name="con_id" size="15"/>
                 </td>
 
                 <%-- Button --%>
                 <td><input type="submit" value="Update"></td>
                 </form>
-                <form action="section_entry_form.jsp" method="POST">
+                <form action="section_concentration_entry_form.jsp" method="POST">
                     <input type="hidden" name="action" value="delete"/>
-                    <input type="hidden" name="section_id" value="<%=rs.getInt("section_id")%>"/>
+                    <input type="hidden" name="se_con_id" value="<%=rs.getInt("se_con_id")%>"/>
                     <%-- Button --%>
                 <td><input type="submit" value="Delete"/></td>
                 </form>
@@ -236,7 +199,7 @@
                 }
             }
             %>
-            </table>
+        </table>
         </td>
     </tr>
 </table>

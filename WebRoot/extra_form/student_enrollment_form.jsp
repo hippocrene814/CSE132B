@@ -1,7 +1,7 @@
 <html>
 
 <body>
-<h2>Faculty Research Entry Form</h2>
+<h2>Student Enrollment Form</h2>
 <table>
     <tr>
         <td valign="top">
