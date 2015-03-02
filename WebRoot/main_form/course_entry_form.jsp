@@ -39,7 +39,7 @@
 
                     // Create the prepared statement and use it to
                     pstmt = conn
-                    .prepareStatement("INSERT INTO course (course_number, min_unit, max_unit, grade_option, need_lab, need_consent, cate_id, pre_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+                    .prepareStatement("INSERT INTO course (course_number, min_unit, max_unit, grade_option, need_lab, need_consent, pre_id) VALUES (?, ?, ?, ?, ?, ?, ?)");
 
                     pstmt.setString(1, request.getParameter("course_number"));
                     pstmt.setInt(2, Integer.parseInt(request.getParameter("min_unit")));
@@ -47,8 +47,7 @@
                     pstmt.setString(4, request.getParameter("grade_option"));
                     pstmt.setInt(5, Integer.parseInt(request.getParameter("need_lab")));
                     pstmt.setInt(6, Integer.parseInt(request.getParameter("need_consent")));
-                    pstmt.setInt(7, Integer.parseInt(request.getParameter("cate_id")));
-                    pstmt.setInt(8, Integer.parseInt(request.getParameter("pre_id")));
+                    pstmt.setInt(7, Integer.parseInt(request.getParameter("pre_id")));
 
                     int rowCount = pstmt.executeUpdate();
 
@@ -67,7 +66,7 @@
                     conn.setAutoCommit(false);
 
                     pstmt = conn
-                        .prepareStatement("UPDATE course SET course_number = ?, min_unit = ?, max_unit = ?, grade_option = ?, need_lab = ?, need_consent = ?, cate_id = ?, pre_id = ? WHERE course_id = ? ");
+                        .prepareStatement("UPDATE course SET course_number = ?, min_unit = ?, max_unit = ?, grade_option = ?, need_lab = ?, need_consent = ?, pre_id = ? WHERE course_id = ? ");
 
                     pstmt.setString(1, request.getParameter("course_number"));
                     pstmt.setInt(2, Integer.parseInt(request.getParameter("min_unit")));
@@ -75,9 +74,8 @@
                     pstmt.setString(4, request.getParameter("grade_option"));
                     pstmt.setInt(5, Integer.parseInt(request.getParameter("need_lab")));
                     pstmt.setInt(6, Integer.parseInt(request.getParameter("need_consent")));
-                    pstmt.setInt(7, Integer.parseInt(request.getParameter("cate_id")));
-                    pstmt.setInt(8, Integer.parseInt(request.getParameter("pre_id")));
-                    pstmt.setInt(9, Integer.parseInt(request.getParameter("course_id")));
+                    pstmt.setInt(7, Integer.parseInt(request.getParameter("pre_id")));
+                    pstmt.setInt(8, Integer.parseInt(request.getParameter("course_id")));
 
                     int rowCount = pstmt.executeUpdate();
 
@@ -129,7 +127,6 @@
                 <th>Grade Option</th>
                 <th>Need Lab</th>
                 <th>Need Consent</th>
-                <th>Category</th>
                 <th>Prerequisite</th>
             </tr>
 
@@ -159,7 +156,6 @@
                         <option value="1">1</option>
                       </select>
                     </th>
-                    <th><input value="" name="cate_id" size="10"/></th>
                     <th><input value="" name="pre_id" size="10"/></th>
                     <th><input type="submit" value="Insert"/></th>
                 </form>
@@ -176,7 +172,6 @@
                 <th>Grade Option</th>
                 <th>Need Lab</th>
                 <th>Need Consent</th>
-                <th>Category</th>
                 <th>Prerequisite</th>
             </tr>
 
@@ -217,10 +212,6 @@
 
                 <td>
                     <input value="<%=rs.getInt("need_consent")%>" name="need_consent" size="10"/>
-                </td>
-
-                <td>
-                    <input value="<%=rs.getInt("cate_id")%>" name="cate_id" size="10"/>
                 </td>
 
                 <td>

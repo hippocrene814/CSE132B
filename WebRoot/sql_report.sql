@@ -64,23 +64,23 @@ WHERE type = 'BE' OR type = 'BA'
 
 -- total remainunit
 SELECT de.total_min_unit - SUM(ss.unit) AS remain_unit
-FROM student st, student_section ss, degree de
-WHERE de.name = ? AND st.ssn = ? AND st.stu_id = ss.stu_id AND ss.grade <> 'IN' AND ss.grade <> 'na'
+FROM student st, student_section ss, section se, class cl, degree de
+WHERE de.name = ? AND st.ssn = ? AND st.stu_id = ss.stu_id AND ss.grade <> 'f' AND ss.grade <> 'na' AND se.section_id = ss.section_id AND se.class_id = cl.class_id AND (cl.year <> 2009 OR cl.quarter <> 'SPRING')
 GROUP BY de.total_min_unit
 
---0226 -- remain category unit
+-- version2
 -- SELECT dc.cate_id, dc.min_unit - SUM(ss.unit) AS remain_cate_unit
--- FROM student st, student_section ss, section se, class cl, course co, degree de, degree_category dc
--- WHERE st.ssn = ? AND st.stu_id = ss.stu_id AND ss.grade <> 'IN' AND ss.grade <> 'na' AND ss.section_id = se.section_id AND se.class_id = cl.class_id AND cl.course_id = co.course_id
---         AND de.name = ? AND de.degree_id = dc.degree_id AND dc.cate_id = co.cate_id
+-- FROM student st, student_section ss, degree de, degree_category dc, section_category sc
+-- WHERE st.ssn = ? AND st.stu_id = ss.stu_id AND ss.grade <> 'IN' AND ss.grade <> 'na' AND ss.section_id = sc.section_id
+--         AND de.name = ? AND de.degree_id = dc.degree_id
 -- GROUP BY dc.cate_id, dc.min_unit
 
--- version2
-SELECT dc.cate_id, dc.min_unit - SUM(ss.unit) AS remain_cate_unit
-FROM student st, student_section ss, degree de, degree_category dc, section_category sc
-WHERE st.ssn = ? AND st.stu_id = ss.stu_id AND ss.grade <> 'IN' AND ss.grade <> 'na' AND ss.section_id = sc.section_id
-        AND de.name = ? AND de.degree_id = dc.degree_id
-GROUP BY dc.cate_id, dc.min_unit
+-- version3
+SELECT dc.cate_id, ca.cate_name, dc.min_unit - SUM(ss.unit) AS remain_cate_unit
+FROM student st, student_section ss, section se, class cl, course co, course_category cc, degree de, degree_category dc, category ca
+WHERE st.ssn = ? AND st.stu_id = ss.stu_id AND ss.grade <> 'f' AND ss.grade <> 'na' AND ss.section_id = se.section_id AND se.class_id = cl.class_id
+        AND (cl.year <> 2009 OR cl.quarter <> 'SPRING') AND cl.course_id = co.course_id AND co.course_id = cc.course_id AND de.name = ? AND de.degree_id = dc.degree_id AND dc.cate_id = cc.cate_id AND ca.cate_id = cc.cate_id
+GROUP BY dc.cate_id, dc.min_unit, ca.cate_name
 
 5.
 -- grad info
@@ -97,44 +97,44 @@ SELECT name, type
 FROM degree
 WHERE type = 'MS'
 
--- 0226 use one query
+-- version2
 -- SELECT con.con_name ,dc.con_id, dc.min_unit, dc.min_grade
 -- FROM degree de, degree_concentration dc, concentration con
--- WHERE de.name = 'EE' AND de.degree_id = dc.degree_id AND dc.con_id = con.con_id
+-- WHERE de.name = ? AND de.degree_id = dc.degree_id AND dc.con_id = con.con_id
 --     AND dc.min_unit <= (
 --         SELECT SUM(ss.unit) AS unit
---         FROM student st, student_section ss, section se, class cl, course_concentration cc
---         WHERE st.ssn = 234234231 AND st.stu_id = ss.stu_id AND ss.grade <> 'IN' AND ss.grade <> 'na' AND ss.section_id = se.section_id AND se.class_id = cl.class_id AND cl.course_id = cc.course_id AND cc.con_id = dc.con_id
+--         FROM student st, student_section ss, section se, section_concentration sc
+--         WHERE st.ssn = ? AND st.stu_id = ss.stu_id AND ss.grade <> 'IN' AND ss.grade <> 'na' AND ss.section_id = sc.section_id AND sc.con_id = dc.con_id
 --     ) AND dc.min_grade <= (
 --         SELECT SUM(ss.unit * co.grade_num) / SUM(ss.unit) AS grade
---         FROM student st, student_section ss, section se, class cl, course_concentration cc, conversion co
---         WHERE st.ssn = 234234231 AND st.stu_id = ss.stu_id AND ss.letter_su = 'letter' AND ss.grade <> 'IN' AND ss.grade <> 'na' AND ss.section_id = se.section_id AND se.class_id = cl.class_id AND cl.course_id = cc.course_id
---             AND ss.grade = co.grade_letter AND cc.con_id = dc.con_id
+--         FROM student st, student_section ss, section se, section_concentration sc, conversion co
+--         WHERE st.ssn = ? AND st.stu_id = ss.stu_id AND ss.letter_su = 'letter' AND ss.grade <> 'IN' AND ss.grade <> 'na' AND ss.section_id = sc.section_id
+--             AND ss.grade = co.grade_letter AND sc.con_id = dc.con_id
 --     )
 
--- version2
-SELECT con.con_name ,dc.con_id, dc.min_unit, dc.min_grade
+-- version3
+SELECT con.con_name ,dc.con_id, dc.min_unit
 FROM degree de, degree_concentration dc, concentration con
 WHERE de.name = ? AND de.degree_id = dc.degree_id AND dc.con_id = con.con_id
     AND dc.min_unit <= (
         SELECT SUM(ss.unit) AS unit
-        FROM student st, student_section ss, section se, section_concentration sc
-        WHERE st.ssn = ? AND st.stu_id = ss.stu_id AND ss.grade <> 'IN' AND ss.grade <> 'na' AND ss.section_id = sc.section_id AND sc.con_id = dc.con_id
-    ) AND dc.min_grade <= (
+        FROM student st, student_section ss, section se, class cl, course_concentration cc
+        WHERE st.ssn = ? AND st.stu_id = ss.stu_id AND ss.grade <> 'f' AND ss.section_id = se.section_id AND se.class_id = cl.class_id AND cl.course_id = cc.course_id AND cc.con_id = dc.con_id
+    ) AND 3 <= (
         SELECT SUM(ss.unit * co.grade_num) / SUM(ss.unit) AS grade
-        FROM student st, student_section ss, section se, section_concentration sc, conversion co
-        WHERE st.ssn = ? AND st.stu_id = ss.stu_id AND ss.letter_su = 'letter' AND ss.grade <> 'IN' AND ss.grade <> 'na' AND ss.section_id = sc.section_id
-            AND ss.grade = co.grade_letter AND sc.con_id = dc.con_id
+        FROM student st, student_section ss, section se, class cl, course_concentration cc, conversion co
+        WHERE st.ssn = ? AND st.stu_id = ss.stu_id AND ss.letter_su = 'letter' AND ss.grade <> 'IN' AND ss.grade <> 'na' AND ss.section_id = se.section_id AND se.class_id = cl.class_id AND cl.course_id = cc.course_id
+            AND ss.grade = co.grade_letter AND cc.con_id = dc.con_id
     )
 
---0226 Next available time
+-- version2
 -- SELECT con.con_name ,dc.con_id, co.course_id, co.course_number, cl.title, cl.year, cl.quarter
--- FROM degree de, degree_concentration dc, concentration con, course co, course_concentration cc, class cl, period pr
--- WHERE de.name = 'EE' AND de.degree_id = dc.degree_id AND dc.con_id = con.con_id AND con.con_id = cc.con_id AND cc.course_id = co.course_id AND cl.course_id = co.course_id AND cl.year = pr.year AND cl.quarter = pr.quarter
+-- FROM degree de, degree_concentration dc, concentration con, course co, section_concentration sc, section se, class cl, period pr
+-- WHERE de.name = ? AND de.degree_id = dc.degree_id AND dc.con_id = con.con_id AND con.con_id = sc.con_id AND sc.section_id = se.section_id AND se.class_id = cl.class_id AND cl.course_id = co.course_id AND cl.year = pr.year AND cl.quarter = pr.quarter
 --     AND co.course_id NOT IN (
 --         SELECT cl2.course_id
 --         FROM student st2, student_section ss2, section se2, class cl2
---         WHERE st2.ssn = 234234231 AND st2.stu_id = ss2.stu_id AND ss2.grade <> 'IN' AND ss2.grade <> 'na' AND ss2.section_id = se2.section_id AND se2.class_id = cl2.class_id
+--         WHERE st2.ssn = ? AND st2.stu_id = ss2.stu_id AND ss2.grade <> 'IN' AND ss2.grade <> 'na' AND ss2.section_id = se2.section_id AND se2.class_id = cl2.class_id
 --     )
 --     AND pr.period_id <= (
 --         SELECT min(pr3.period_id)
@@ -142,14 +142,14 @@ WHERE de.name = ? AND de.degree_id = dc.degree_id AND dc.con_id = con.con_id
 --         WHERE cl3.course_id = co.course_id AND cl3.year = pr3.year AND cl3.quarter = pr3.quarter
 --     )
 
--- version2
+-- version3
 SELECT con.con_name ,dc.con_id, co.course_id, co.course_number, cl.title, cl.year, cl.quarter
-FROM degree de, degree_concentration dc, concentration con, course co, section_concentration sc, section se, class cl, period pr
-WHERE de.name = ? AND de.degree_id = dc.degree_id AND dc.con_id = con.con_id AND con.con_id = sc.con_id AND sc.section_id = se.section_id AND se.class_id = cl.class_id AND cl.course_id = co.course_id AND cl.year = pr.year AND cl.quarter = pr.quarter
+FROM degree de, degree_concentration dc, concentration con, course co, course_concentration cc, class cl, period pr
+WHERE de.name = ? AND de.degree_id = dc.degree_id AND dc.con_id = con.con_id AND con.con_id = cc.con_id AND cc.course_id = co.course_id AND cl.course_id = co.course_id AND cl.year = pr.year AND cl.quarter = pr.quarter
     AND co.course_id NOT IN (
         SELECT cl2.course_id
         FROM student st2, student_section ss2, section se2, class cl2
-        WHERE st2.ssn = ? AND st2.stu_id = ss2.stu_id AND ss2.grade <> 'IN' AND ss2.grade <> 'na' AND ss2.section_id = se2.section_id AND se2.class_id = cl2.class_id
+        WHERE st2.ssn = ? AND st2.stu_id = ss2.stu_id AND ss2.grade <> 'f' AND ss2.section_id = se2.section_id AND se2.class_id = cl2.class_id
     )
     AND pr.period_id <= (
         SELECT min(pr3.period_id)
@@ -210,24 +210,24 @@ ORDER BY aval_date::date, rp.start_time
 -- ii
 SELECT ss.grade, count(*) AS cnt
 FROM class cl, section se, student_section ss
-WHERE cl.course_id = ? AND cl.year = ? AND cl.quarter = ? AND cl.class_id = se.class_id AND se.fac_id = ? AND se.section_id = ss.section_id AND ss.grade <> 'IN'
+WHERE cl.course_id = ? AND cl.year = ? AND cl.quarter = ? AND cl.class_id = se.class_id AND se.fac_id = ? AND se.section_id = ss.section_id AND ss.grade <> 'f'
 GROUP BY ss.grade
 
 -- iii
 SELECT ss.grade, count(*) AS cnt
 FROM class cl, section se, student_section ss
-WHERE cl.course_id = ? AND cl.class_id = se.class_id AND se.fac_id = ? AND se.section_id = ss.section_id AND ss.grade <> 'IN'
+WHERE cl.course_id = ? AND cl.class_id = se.class_id AND se.fac_id = ? AND se.section_id = ss.section_id AND ss.grade <> 'f'
 GROUP BY ss.grade
 
 -- iv
 SELECT ss.grade, count(*) AS cnt
 FROM class cl, section se, student_section ss
-WHERE cl.course_id = ? AND cl.class_id = se.class_id AND se.section_id = ss.section_id AND ss.grade <> 'IN'
+WHERE cl.course_id = ? AND cl.class_id = se.class_id AND se.section_id = ss.section_id AND ss.grade <> 'f'
 GROUP BY ss.grade
 
 -- v
 SELECT SUM(ss.unit * con.grade_num) / SUM(ss.unit) AS grade
 FROM class cl, section se, student_section ss, conversion con
-WHERE cl.course_id = ? AND cl.class_id = se.class_id AND se.fac_id = ? AND se.section_id = ss.section_id AND ss.grade <> 'IN' AND ss.grade = con.grade_letter
+WHERE cl.course_id = ? AND cl.class_id = se.class_id AND se.fac_id = ? AND se.section_id = ss.section_id AND ss.grade <> 'f' AND ss.grade = con.grade_letter
 
 

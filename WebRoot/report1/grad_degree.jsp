@@ -38,7 +38,7 @@
                     conn.setAutoCommit(false);
 
                     pstmt = conn
-                    .prepareStatement("SELECT con.con_name ,dc.con_id, dc.min_unit, dc.min_grade FROM degree de, degree_concentration dc, concentration con WHERE de.name = ? AND de.degree_id = dc.degree_id AND dc.con_id = con.con_id AND dc.min_unit <= (SELECT SUM(ss.unit) AS unit FROM student st, student_section ss, section se, section_concentration sc WHERE st.ssn = ? AND st.stu_id = ss.stu_id AND ss.grade <> 'IN' AND ss.grade <> 'na' AND ss.section_id = sc.section_id AND sc.con_id = dc.con_id) AND dc.min_grade <= ( SELECT SUM(ss.unit * co.grade_num) / SUM(ss.unit) AS grade FROM student st, student_section ss, section se, section_concentration sc, conversion co WHERE st.ssn = ? AND st.stu_id = ss.stu_id AND ss.letter_su = 'letter' AND ss.grade <> 'IN' AND ss.grade <> 'na' AND ss.section_id = sc.section_id AND ss.grade = co.grade_letter AND sc.con_id = dc.con_id)");
+                    .prepareStatement("SELECT con.con_name ,dc.con_id, dc.min_unit FROM degree de, degree_concentration dc, concentration con WHERE de.name = ? AND de.degree_id = dc.degree_id AND dc.con_id = con.con_id AND dc.min_unit <= (SELECT SUM(ss.unit) AS unit FROM student st, student_section ss, section se, class cl, course_concentration cc WHERE st.ssn = ? AND st.stu_id = ss.stu_id AND ss.grade <> 'f' AND ss.section_id = se.section_id AND se.class_id = cl.class_id AND cl.course_id = cc.course_id AND cc.con_id = dc.con_id) AND 3 <= (SELECT SUM(ss.unit * co.grade_num) / SUM(ss.unit) AS grade FROM student st, student_section ss, section se, class cl, course_concentration cc, conversion co WHERE st.ssn = ? AND st.stu_id = ss.stu_id AND ss.letter_su = 'letter' AND ss.grade <> 'f' AND ss.section_id = se.section_id AND se.class_id = cl.class_id AND cl.course_id = cc.course_id AND ss.grade = co.grade_letter AND cc.con_id = dc.con_id)");
 
                     pstmt.setString(1, request.getParameter("show_degree"));
                     pstmt.setInt(2, Integer.parseInt(request.getParameter("show_ssn")));
@@ -54,7 +54,6 @@
                     <th>Concentration Name </th>
                     <th>Concentration Id </th>
                     <th>Min Unit </th>
-                    <th>Min Grade </th>
                     </tr>
                     <%
                         // Iterate over the ResultSet
@@ -70,9 +69,6 @@
                         <td>
                             <%=rs2.getInt("min_unit")%>
                         </td>
-                        <td>
-                            <%=rs2.getFloat("min_grade")%>
-                        </td>
                     </tr>
                     <%
                         }
@@ -81,7 +77,7 @@
                     <%
                     // Create the prepared statement and use it to
                     pstmt = conn
-                    .prepareStatement("SELECT con.con_name ,dc.con_id, co.course_id, co.course_number, cl.title, cl.year, cl.quarter FROM degree de, degree_concentration dc, concentration con, course co, section_concentration sc, section se, class cl, period pr WHERE de.name = ? AND de.degree_id = dc.degree_id AND dc.con_id = con.con_id AND con.con_id = sc.con_id AND sc.section_id = se.section_id AND se.class_id = cl.class_id AND cl.course_id = co.course_id AND cl.year = pr.year AND cl.quarter = pr.quarter AND co.course_id NOT IN (SELECT cl2.course_id FROM student st2, student_section ss2, section se2, class cl2 WHERE st2.ssn = ? AND st2.stu_id = ss2.stu_id AND ss2.grade <> 'IN' AND ss2.grade <> 'na' AND ss2.section_id = se2.section_id AND se2.class_id = cl2.class_id) AND pr.period_id <= ( SELECT min(pr3.period_id) FROM class cl3, period pr3 WHERE cl3.course_id = co.course_id AND cl3.year = pr3.year AND cl3.quarter = pr3.quarter)");
+                    .prepareStatement("SELECT con.con_name ,dc.con_id, co.course_id, co.course_number, cl.title, cl.year, cl.quarter FROM degree de, degree_concentration dc, concentration con, course co, course_concentration cc, class cl, period pr WHERE de.name = ? AND de.degree_id = dc.degree_id AND dc.con_id = con.con_id AND con.con_id = cc.con_id AND cc.course_id = co.course_id AND cl.course_id = co.course_id AND cl.year = pr.year AND cl.quarter = pr.quarter AND co.course_id NOT IN (SELECT cl2.course_id FROM student st2, student_section ss2, section se2, class cl2 WHERE st2.ssn = ? AND st2.stu_id = ss2.stu_id AND ss2.grade <> 'f' AND ss2.section_id = se2.section_id AND se2.class_id = cl2.class_id) AND pr.period_id <= (SELECT min(pr3.period_id) FROM class cl3, period pr3 WHERE cl3.course_id = co.course_id AND cl3.year = pr3.year AND cl3.quarter = pr3.quarter)");
 
                     pstmt.setString(1, request.getParameter("show_degree"));
                     pstmt.setInt(2, Integer.parseInt(request.getParameter("show_ssn")));
@@ -143,7 +139,7 @@
                 Statement statement = conn.createStatement();
 
                 // Use the created statement to SELECT
-                rs = statement.executeQuery("SELECT s.ssn, s.first_name AS first, s.middle_name AS middle, s.last_name AS last FROM student s, student_enrollment se WHERE s.stu_id = se.stu_id AND se.year = 2009 AND se.quarter = 'SPRING'AND NOT EXISTS ( SELECT * FROM undergrad u WHERE s.stu_id = u.stu_id )");
+                rs = statement.executeQuery("SELECT s.ssn, s.first_name AS first, s.middle_name AS middle, s.last_name AS last FROM student s, student_enrollment se WHERE s.stu_id = se.stu_id AND se.year = 2009 AND se.quarter = 'SPRING' AND NOT EXISTS ( SELECT * FROM undergrad u WHERE s.stu_id = u.stu_id )");
             %>
             <hr>
             <form action="grad_degree.jsp" method="POST">

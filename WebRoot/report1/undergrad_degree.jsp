@@ -37,9 +37,9 @@
                     // Begin transaction
                     conn.setAutoCommit(false);
 
-                    // Create the prepared statement and use it to
+                    // Create the prepared statement and use it
                     pstmt = conn
-                    .prepareStatement("SELECT dc.cate_id, dc.min_unit - SUM(ss.unit) AS remain_cate_unit FROM student st, student_section ss, degree de, degree_category dc, section_category sc WHERE st.ssn = ? AND st.stu_id = ss.stu_id AND ss.grade <> 'IN' AND ss.grade <> 'na' AND ss.section_id = sc.section_id AND de.name = ? AND de.degree_id = dc.degree_id GROUP BY dc.cate_id, dc.min_unit");
+                    .prepareStatement("SELECT dc.cate_id, ca.cate_name, dc.min_unit - SUM(ss.unit) AS remain_cate_unit FROM student st, student_section ss, section se, class cl, course co, course_category cc, degree de, degree_category dc, category ca WHERE st.ssn = ? AND st.stu_id = ss.stu_id AND ss.grade <> 'f' AND ss.grade <> 'na' AND ss.section_id = se.section_id AND se.class_id = cl.class_id AND (cl.year <> 2009 OR cl.quarter <> 'SPRING') AND cl.course_id = co.course_id AND co.course_id = cc.course_id AND de.name = ? AND de.degree_id = dc.degree_id AND dc.cate_id = cc.cate_id AND ca.cate_id = cc.cate_id GROUP BY dc.cate_id, dc.min_unit, ca.cate_name");
 
                     pstmt.setInt(1, Integer.parseInt(request.getParameter("show_ssn")));
                     pstmt.setString(2, request.getParameter("show_degree"));
@@ -52,6 +52,7 @@
                     <table border="1">
                     <tr>
                     <th>Category Id </th>
+                    <th>Category Name </th>
                     <th>Remain Unit </th>
                     </tr>
                     <%
@@ -61,6 +62,9 @@
                     <tr>
                         <td>
                             <%=rs2.getInt("cate_id")%>
+                        </td>
+                        <td>
+                            <%=rs2.getString("cate_name")%>
                         </td>
                         <td>
                             <%=rs2.getInt("remain_cate_unit")%>
@@ -73,7 +77,7 @@
                     <%
                     // Create the prepared statement and use it to
                     pstmt = conn
-                    .prepareStatement("SELECT de.total_min_unit - SUM(ss.unit) AS remain_unit FROM student st, student_section ss, degree de WHERE st.ssn = ? AND de.name = ? AND st.stu_id = ss.stu_id AND ss.grade <> 'IN' AND ss.grade <> 'na' GROUP BY de.total_min_unit");
+                    .prepareStatement("SELECT de.total_min_unit - SUM(ss.unit) AS remain_unit FROM student st, student_section ss, degree de WHERE st.ssn = ? AND de.name = ? AND st.stu_id = ss.stu_id AND ss.grade <> 'f' AND ss.grade <> 'na' GROUP BY de.total_min_unit");
 
                     pstmt.setInt(1, Integer.parseInt(request.getParameter("show_ssn")));
                     pstmt.setString(2, request.getParameter("show_degree"));

@@ -1,7 +1,7 @@
 <html>
 
 <body>
-<h2>Section Category Entry Form</h2>
+<h2>Course Category Entry Form</h2>
 <table>
     <tr>
         <td valign="top">
@@ -39,9 +39,9 @@
 
                     // Create the prepared statement and use it to
                     pstmt = conn
-                    .prepareStatement("INSERT INTO section_category (section_id, cate_id) VALUES (?, ?)");
+                    .prepareStatement("INSERT INTO course_category (course_id, cate_id) VALUES (?, ?)");
 
-                    pstmt.setInt(1, Integer.parseInt(request.getParameter("section_id")));
+                    pstmt.setInt(1, Integer.parseInt(request.getParameter("course_id")));
                     pstmt.setInt(2, Integer.parseInt(request.getParameter("cate_id")));
                     int rowCount = pstmt.executeUpdate();
 
@@ -60,11 +60,11 @@
                     conn.setAutoCommit(false);
 
                     pstmt = conn
-                        .prepareStatement("UPDATE section_category SET section_id = ?, cate_id = ? WHERE se_ca_id = ? ");
+                        .prepareStatement("UPDATE course_category SET course_id = ?, cate_id = ? WHERE cc_id = ? ");
 
-                    pstmt.setInt(1, Integer.parseInt(request.getParameter("section_id")));
+                    pstmt.setInt(1, Integer.parseInt(request.getParameter("course_id")));
                     pstmt.setInt(2, Integer.parseInt(request.getParameter("cate_id")));
-                    pstmt.setInt(3, Integer.parseInt(request.getParameter("se_ca_id")));
+                    pstmt.setInt(3, Integer.parseInt(request.getParameter("cc_id")));
                     int rowCount = pstmt.executeUpdate();
 
                     // Commit transaction
@@ -84,9 +84,9 @@
                     // Create the prepared statement and use it to
                     // DELETE students FROM the Students table.
                     pstmt = conn
-                        .prepareStatement("DELETE FROM section_category WHERE se_ca_id = ?");
+                        .prepareStatement("DELETE FROM course_category WHERE cc_id = ?");
 
-                    pstmt.setInt(1, Integer.parseInt(request.getParameter("se_ca_id")));
+                    pstmt.setInt(1, Integer.parseInt(request.getParameter("cc_id")));
                     int rowCount = pstmt.executeUpdate();
 
                     // Commit transaction
@@ -101,22 +101,22 @@
                 Statement statement = conn.createStatement();
 
                 // Use the created statement to SELECT
-                rs = statement.executeQuery("SELECT * FROM section_category ORDER BY se_ca_id");
+                rs = statement.executeQuery("SELECT * FROM course_category ORDER BY cc_id");
             %>
 
             <!-- Add an HTML table header row to format the results -->
             <table border="1">
             <tr>
                 <th>ID</th>
-                <th>Section Id</th>
+                <th>Course Id</th>
                 <th>Category Id</th>
             </tr>
 
             <tr>
-                <form action="section_category_entry_form.jsp" method="POST">
+                <form action="course_category_entry_form.jsp" method="POST">
                     <input type="hidden" name="action" value="insert"/>
                     <th>&nbsp;</th>
-                    <th><input value="" name="section_id" size="10"/></th>
+                    <th><input value="" name="course_id" size="10"/></th>
                     <th><input value="" name="cate_id" size="10"/></th>
                     <th><input type="submit" value="Insert"/></th>
                 </form>
@@ -129,16 +129,16 @@
             %>
 
             <tr>
-                <form action="section_category_entry_form.jsp" method="POST">
+                <form action="course_category_entry_form.jsp" method="POST">
                     <input type="hidden" name="action" value="update"/>
-                    <input type="hidden" name="se_ca_id" value="<%=rs.getInt("se_ca_id")%>"/>
+                    <input type="hidden" name="cc_id" value="<%=rs.getInt("cc_id")%>"/>
 
                 <td>
-                    <%=rs.getInt("se_ca_id")%>
+                    <%=rs.getInt("cc_id")%>
                 </td>
 
                 <td>
-                    <input value="<%=rs.getInt("section_id")%>" name="section_id" size="15"/>
+                    <input value="<%=rs.getInt("course_id")%>" name="course_id" size="15"/>
                 </td>
 
                 <td>
@@ -148,9 +148,9 @@
                 <%-- Button --%>
                 <td><input type="submit" value="Update"></td>
                 </form>
-                <form action="section_category_entry_form.jsp" method="POST">
+                <form action="course_category_entry_form.jsp" method="POST">
                     <input type="hidden" name="action" value="delete"/>
-                    <input type="hidden" name="se_ca_id" value="<%=rs.getInt("se_ca_id")%>"/>
+                    <input type="hidden" name="cc_id" value="<%=rs.getInt("cc_id")%>"/>
                     <%-- Button --%>
                 <td><input type="submit" value="Delete"/></td>
                 </form>
