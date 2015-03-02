@@ -108,7 +108,7 @@
                 Statement statement = conn.createStatement();
 
                 // Use the created statement to SELECT
-                rs = statement.executeQuery("SELECT st.first_name as first, st.middle_name as middle, st.last_name as last, st.ssn as ssn FROM student st, student_enrollment se WHERE st.stu_id = se.stu_id AND se.year = 2009 AND se.quarter = 'SPRING'");
+                rs = statement.executeQuery("SELECT st.first_name AS first, st.middle_name AS middle, st.last_name AS last, st.ssn AS ssn FROM student st, student_enrollment se WHERE st.stu_id = se.stu_id AND se.year = 2009 AND se.quarter = 'SPRING'");
             %>
             <hr>
             <form action="class_schedule.jsp" method="POST">

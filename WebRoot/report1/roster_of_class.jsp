@@ -39,7 +39,7 @@
 
                     // Create the prepared statement and use it to
                     pstmt = conn
-                    .prepareStatement("SELECT st.stu_id, st.ssn, st.citizen, st.pre_school, st.pre_degree, st.pre_major, st.first_name as first, st.middle_name as middle, st.last_name as last, ss.unit, ss.letter_su FROM class cl, section se, student_section ss, student st WHERE cl.title = ? AND se.class_id = cl.class_id AND ss.section_id = se.section_id AND ss.stu_id = st.stu_id ");
+                    .prepareStatement("SELECT st.stu_id, st.ssn, st.citizen, st.pre_school, st.pre_degree, st.pre_major, st.first_name AS first, st.middle_name AS middle, st.last_name AS last, ss.unit, ss.letter_su FROM class cl, section se, student_section ss, student st WHERE cl.title = ? AND se.class_id = cl.class_id AND ss.section_id = se.section_id AND ss.stu_id = st.stu_id ");
 
                     pstmt.setString(1, request.getParameter("show_title"));
                     rs2 = pstmt.executeQuery();
@@ -116,7 +116,7 @@
                 Statement statement = conn.createStatement();
 
                 // Use the created statement to SELECT
-                rs = statement.executeQuery("SELECT cl.title as title, cl.year as year, cl.quarter as quarter, co.course_number as course_number FROM class cl, course co WHERE cl.course_id = co.course_id");
+                rs = statement.executeQuery("SELECT cl.title AS title, cl.year AS year, cl.quarter AS quarter, co.course_number AS course_number FROM class cl, course co WHERE cl.course_id = co.course_id");
             %>
             <hr>
             <form action="roster_of_class.jsp" method="POST">
