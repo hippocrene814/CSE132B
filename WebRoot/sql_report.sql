@@ -83,11 +83,27 @@ GROUP BY de.total_min_unit
 -- GROUP BY dc.cate_id, dc.min_unit, ca.cate_name
 
 -- remain unit for each category
-SELECT dc.cate_id, ca.cate_name, dc.min_unit - SUM(ss.unit) AS remain_cate_unit
-FROM student st, student_section ss, section se, class cl, course co, course_category cc, degree de, degree_category dc, category ca
-WHERE st.ssn = ? AND st.stu_id = ss.stu_id AND ss.grade <> 'f' AND ss.grade <> 'na' AND ss.section_id = se.section_id AND se.class_id = cl.class_id AND (cl.year <> 2009 OR cl.quarter <> 'SPRING') AND cl.course_id = co.course_id
-    AND co.course_id = cc.course_id AND de.name = ? AND de.degree_id = dc.degree_id AND dc.cate_id = cc.cate_id AND ca.cate_id = cc.cate_id
-GROUP BY dc.cate_id, dc.min_unit, ca.cate_name
+-- SELECT dc.cate_id, ca.cate_name, dc.min_unit - SUM(ss.unit) AS remain_cate_unit
+-- FROM student st, student_section ss, section se, class cl, course co, course_category cc, degree de, degree_category dc, category ca
+-- WHERE st.ssn = ? AND st.stu_id = ss.stu_id AND ss.grade <> 'f' AND ss.grade <> 'na' AND ss.section_id = se.section_id AND se.class_id = cl.class_id AND (cl.year <> 2009 OR cl.quarter <> 'SPRING') AND cl.course_id = co.course_id
+--     AND co.course_id = cc.course_id AND de.name = ? AND de.degree_id = dc.degree_id AND dc.cate_id = cc.cate_id AND ca.cate_id = cc.cate_id
+-- GROUP BY dc.cate_id, dc.min_unit, ca.cate_name
+
+SELECT current_degree_cate.cate_id, ca.cate_name,
+    CASE WHEN current_degree_cate.min_unit - SUM(completed_unit) IS NULL
+    THEN current_degree_cate.min_unit
+    ELSE current_degree_cate.min_unit - SUM(completed_unit) END AS remain_cate_unit
+FROM degree de, category ca, (degree_category dc LEFT OUTER JOIN
+    (SELECT ca.cate_name, cc.cate_id AS category_id, SUM(ss.unit) AS completed_unit
+    FROM student st, student_section ss, section se, class cl, course co, course_category cc, category ca
+    WHERE st.ssn = 111111111 AND st.stu_id = ss.stu_id AND ss.grade <> 'f'
+    AND ss.section_id = se.section_id AND se.class_id = cl.class_id
+    AND (cl.year <> 2009 OR cl.quarter <> 'SPRING')
+    AND co.course_id = cl.course_id AND cc.course_id = co.course_id AND cc.cate_id = ca.cate_id
+    GROUP BY cc.cate_id, ca.cate_name) AS current_cate
+    ON current_cate.category_id = dc.cate_id) AS current_degree_cate
+WHERE de.name = 'bsc_in_cs' AND de.degree_id = current_degree_cate.degree_id AND ca.cate_id = current_degree_cate.cate_id
+GROUP BY current_degree_cate.cate_id, ca.cate_name, current_degree_cate.min_unit
 
 5.
 -- grad info
@@ -165,24 +181,54 @@ ORDER BY aval_date::date, rp.start_time
 
 8.
 -- ii
-SELECT ss.grade, count(*) AS cnt
+SELECT ss.grade, count(*) AS g_cnt
 FROM class cl, section se, student_section ss
 WHERE cl.course_id = ? AND cl.year = ? AND cl.quarter = ? AND cl.class_id = se.class_id AND se.fac_id = ? AND se.section_id = ss.section_id AND ss.grade <> 'f'
 GROUP BY ss.grade
 
+-- version2
+SELECT res.grade, CASE WHEN res.g_cnt IS NULL THEN 0 ELSE res.g_cnt END
+FROM (grade_abcd AS ga LEFT OUTER JOIN
+    (SELECT substring(ss.grade from 1 for 1) AS gra, count(*) AS g_cnt
+    FROM class cl, section se, student_section ss
+    WHERE cl.course_id = ? AND cl.year = ? AND cl.quarter = ? AND cl.class_id = se.class_id AND se.fac_id = ? AND se.section_id = ss.section_id AND ss.grade <> 'f' AND ss.grade <> 'na'
+    GROUP BY substring(ss.grade from 1 for 1)) AS list
+    ON ga.grade = list.gra) AS res
+
 -- iii
-SELECT ss.grade, count(*) AS cnt
+SELECT ss.grade, count(*) AS g_cnt
 FROM class cl, section se, student_section ss
 WHERE cl.course_id = ? AND cl.class_id = se.class_id AND se.fac_id = ? AND se.section_id = ss.section_id AND ss.grade <> 'f'
 GROUP BY ss.grade
 
+-- version2
+SELECT res.grade, CASE WHEN res.g_cnt IS NULL THEN 0 ELSE res.g_cnt END
+FROM (grade_abcd AS ga LEFT OUTER JOIN
+    (SELECT substring(ss.grade from 1 for 1) AS gra, count(*) AS g_cnt
+    FROM class cl, section se, student_section ss
+    WHERE cl.course_id = ? AND cl.class_id = se.class_id AND se.fac_id = ? AND se.section_id = ss.section_id AND ss.grade <> 'f' AND ss.grade <> 'na'
+    GROUP BY substring(ss.grade from 1 for 1)) AS list
+    ON ga.grade = list.gra) AS res
+
 -- iv
-SELECT ss.grade, count(*) AS cnt
+SELECT ss.grade, count(*) AS g_cnt
 FROM class cl, section se, student_section ss
 WHERE cl.course_id = ? AND cl.class_id = se.class_id AND se.section_id = ss.section_id AND ss.grade <> 'f'
 GROUP BY ss.grade
+
+-- version2
+SELECT res.grade, CASE WHEN res.g_cnt IS NULL THEN 0 ELSE res.g_cnt END
+FROM (grade_abcd AS ga LEFT OUTER JOIN
+    (SELECT substring(ss.grade from 1 for 1) AS gra, count(*) AS g_cnt
+    FROM class cl, section se, student_section ss
+    WHERE cl.course_id = ? AND cl.class_id = se.class_id AND se.section_id = ss.section_id AND ss.grade <> 'f' AND ss.grade <> 'na'
+    GROUP BY substring(ss.grade from 1 for 1)) AS list
+    ON ga.grade = list.gra) AS res
 
 -- v
 SELECT SUM(ss.unit * con.grade_num) / SUM(ss.unit) AS grade
 FROM class cl, section se, student_section ss, conversion con
 WHERE cl.course_id = ? AND cl.class_id = se.class_id AND se.fac_id = ? AND se.section_id = ss.section_id AND ss.grade <> 'f' AND ss.grade = con.grade_letter
+
+
+

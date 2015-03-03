@@ -39,7 +39,7 @@
 
                     // Create the prepared statement and use it to
                     pstmt = conn
-                    .prepareStatement("SELECT ss.grade, count(*) AS cnt FROM class cl, section se, student_section ss WHERE cl.course_id = ? AND cl.year = ? AND cl.quarter = ? AND cl.class_id = se.class_id AND se.fac_id = ? AND se.section_id = ss.section_id AND ss.grade <> 'f' GROUP BY ss.grade");
+                    .prepareStatement("SELECT res.grade, CASE WHEN res.g_cnt IS NULL THEN 0 ELSE res.g_cnt END FROM (grade_abcd AS ga LEFT OUTER JOIN (SELECT substring(ss.grade from 1 for 1) AS gra, count(*) AS g_cnt FROM class cl, section se, student_section ss WHERE cl.course_id = ? AND cl.year = ? AND cl.quarter = ? AND cl.class_id = se.class_id AND se.fac_id = ? AND se.section_id = ss.section_id AND ss.grade <> 'f' AND ss.grade <> 'na' GROUP BY substring(ss.grade from 1 for 1)) AS list ON ga.grade = list.gra) AS res");
 
                     pstmt.setInt(1, Integer.parseInt(request.getParameter("course_id")));
                     pstmt.setInt(2, Integer.parseInt(request.getParameter("year")));
@@ -58,7 +58,7 @@
 
                     // Create the prepared statement and use it to
                     pstmt = conn
-                    .prepareStatement("SELECT ss.grade, count(*) AS cnt FROM class cl, section se, student_section ss WHERE cl.course_id = ? AND cl.class_id = se.class_id AND se.fac_id = ? AND se.section_id = ss.section_id AND ss.grade <> 'f' GROUP BY ss.grade");
+                    .prepareStatement("SELECT res.grade, CASE WHEN res.g_cnt IS NULL THEN 0 ELSE res.g_cnt END FROM (grade_abcd AS ga LEFT OUTER JOIN (SELECT substring(ss.grade from 1 for 1) AS gra, count(*) AS g_cnt FROM class cl, section se, student_section ss WHERE cl.course_id = ? AND cl.class_id = se.class_id AND se.fac_id = ? AND se.section_id = ss.section_id AND ss.grade <> 'f' AND ss.grade <> 'na' GROUP BY substring(ss.grade from 1 for 1)) AS list ON ga.grade = list.gra) AS res");
 
                     pstmt.setInt(1, Integer.parseInt(request.getParameter("course_id")));
                     pstmt.setInt(2, Integer.parseInt(request.getParameter("fac_id")));
@@ -75,7 +75,7 @@
 
                     // Create the prepared statement and use it to
                     pstmt = conn
-                    .prepareStatement("SELECT ss.grade, count(*) AS cnt FROM class cl, section se, student_section ss WHERE cl.course_id = ? AND cl.class_id = se.class_id AND se.section_id = ss.section_id AND ss.grade <> 'f' GROUP BY ss.grade");
+                    .prepareStatement("SELECT res.grade, CASE WHEN res.g_cnt IS NULL THEN 0 ELSE res.g_cnt END FROM (grade_abcd AS ga LEFT OUTER JOIN (SELECT substring(ss.grade from 1 for 1) AS gra, count(*) AS g_cnt FROM class cl, section se, student_section ss WHERE cl.course_id = ? AND cl.class_id = se.class_id AND se.section_id = ss.section_id AND ss.grade <> 'f' AND ss.grade <> 'na' GROUP BY substring(ss.grade from 1 for 1)) AS list ON ga.grade = list.gra) AS res");
 
                     pstmt.setInt(1, Integer.parseInt(request.getParameter("course_id")));
                     rs = pstmt.executeQuery();
@@ -99,7 +99,7 @@
                                 <%=rs.getString("grade")%>
                             </td>
                             <td>
-                                <%=rs.getInt("cnt")%>
+                                <%=rs.getInt("g_cnt")%>
                             </td>
                         </tr>
                     <%
