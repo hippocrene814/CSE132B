@@ -39,7 +39,7 @@
 
                     // Create the prepared statement and use it to
                     pstmt = conn
-                    .prepareStatement("SELECT cl.year, cl.quarter, cl.class_id, cl.title, cl.course_id, ss.grade, ss.unit, ss.letter_su FROM student st, student_section ss, section se, class cl WHERE st.ssn = ? AND st.stu_id = ss.stu_id AND ss.section_id = se.section_id AND se.class_id = cl.class_id ORDER BY cl.year, cl.quarter");
+                    .prepareStatement("SELECT cl.year, cl.quarter, cl.class_id, cl.title, cl.course_id, ss.grade, ss.unit, ss.letter_su FROM student st, student_section ss, section se, class cl WHERE st.ssn = ? AND st.stu_id = ss.stu_id AND ss.section_id = se.section_id AND ss.grade <> 'na' AND se.class_id = cl.class_id ORDER BY cl.year, cl.quarter");
 
                     pstmt.setInt(1, Integer.parseInt(request.getParameter("show_ssn")));
                     rs2 = pstmt.executeQuery();
@@ -150,7 +150,7 @@
                         // Iterate over the ResultSet
                         while (rs2.next()) {
                     %>
-                            <%=rs2.getFloat("grade")%>
+                    <%=String.format("output: %.2f", rs2.getFloat("grade"))%>
                     <%
                         }
                     %>

@@ -33,7 +33,7 @@ WHERE EXISTS (
 -- for class
 SELECT cl.year, cl.quarter, cl.class_id, cl.title, cl.course_id, ss.grade, ss.unit, ss.letter_su
 FROM student st, student_section ss, section se, class cl
-WHERE st.ssn = ? AND st.stu_id = ss.stu_id AND ss.section_id = se.section_id AND se.class_id = cl.class_id
+WHERE st.ssn = ? AND st.stu_id = ss.stu_id AND ss.section_id = se.section_id AND grade <> 'na' AND se.class_id = cl.class_id
 ORDER BY cl.year, cl.quarter
 
 -- for GPA
