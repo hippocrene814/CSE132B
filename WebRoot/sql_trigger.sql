@@ -45,7 +45,8 @@ WHEN (
     EXISTS (
         SELECT *
         FROM NEW n, OLD o, meeting m1, meeting m2
-        WHERE n.fac_id = o.fac_id AND n.section_id <> o.section_id AND m1.section_id = n.section_id AND m2.section_id = o.section_id AND CAST(m1.start_time AS Time) < CAST(m2.end_time AS Time) AND CAST(m1.end_time AS Time) > CAST(m2.start_time AS Time) AND m1.day = m2.day
+        WHERE n.fac_id = o.fac_id AND n.section_id <> o.section_id AND m1.section_id = n.section_id AND m2.section_id = o.section_id
+            AND CAST(m1.start_time AS Time) < CAST(m2.end_time AS Time) AND CAST(m1.end_time AS Time) > CAST(m2.start_time AS Time) AND m1.day = m2.day
     )
 )
 BEGIN
@@ -60,7 +61,8 @@ WHEN (
     EXISTS (
         SELECT *
         FROM NEW nm, OLD om, section s1, section s2
-        WHERE s1.fac_id = s2.fac_id AND s1.section_id <> s2.section_id AND s1.section_id = nm.section_id AND s2.section_id = om.section_id AND CAST(nm.start_time AS Time) < CAST(om.end_time AS Time) AND CAST(nm.end_time AS Time) > CAST(om.start_time AS Time) AND nm.day = om.day
+        WHERE s1.fac_id = s2.fac_id AND s1.section_id <> s2.section_id AND s1.section_id = nm.section_id AND s2.section_id = om.section_id
+            AND CAST(nm.start_time AS Time) < CAST(om.end_time AS Time) AND CAST(nm.end_time AS Time) > CAST(om.start_time AS Time) AND nm.day = om.day
     )
 )
 BEGIN

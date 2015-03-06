@@ -1,7 +1,7 @@
 <html>
 
 <body>
-<h2>Classes Taken in the Past</h2>
+<h2>Grade Entry Form</h2>
 <table>
     <tr>
         <td valign="top">
