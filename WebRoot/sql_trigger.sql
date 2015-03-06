@@ -1,13 +1,72 @@
 Part4
 1. meeting_conflict
+CREATE TRIGGER tgr1
+BEFORE INSERT OR UPDATE OR DELETE ON meeting
+FOR EACH ROW
+WHEN (
+    EXISTS (
+        SELECT *
+        FROM NEW n, OLD m
+        WHERE m.section_id = n.section_id AND m.meeting_id <> n.meeting_id AND CAST(m.start_time AS Time) < CAST(n.end_time AS Time) AND CAST(m.end_time AS Time) > CAST(n.start_time AS Time) AND m.day = n.day
+    )
+)
+BEGIN
+raiseerror('Meeting Conflict!')
+rollback transaction
+END
 
 
 2. enrollment_limit
+CREATE TRIGGER tgr2
+BEFORE INSERT OR UPDATE ON student_section
+FOR EACH ROW
+WHEN (
+    EXISTS (
+        SELECT *
+        FROM section se
+        WHERE se.limit < (
+            SELECT count(*)
+            FROM NEW n
+            WHERE n.section_id = se.section_id
+            )
+    )
+)
+BEGIN
+raiseerror('Out of Limit!')
+rollback transaction
+END
 
 
 3. professor_conflict
+CREATE TRIGGER tgr3_1
+BEFORE INSERT OR UPDATE ON section
+FOR EACH ROW
+WHEN (
+    EXISTS (
+        SELECT *
+        FROM NEW n, OLD o, meeting m1, meeting m2
+        WHERE n.fac_id = o.fac_id AND n.section_id <> o.section_id AND m1.section_id = n.section_id AND m2.section_id = o.section_id AND CAST(m1.start_time AS Time) < CAST(m2.end_time AS Time) AND CAST(m1.end_time AS Time) > CAST(m2.start_time AS Time) AND m1.day = m2.day
+    )
+)
+BEGIN
+raiseerror('Cannot update/insert section!')
+rollback transaction
+END
 
-
+CREATE TRIGGER tgr3_2
+BEFORE INSERT OR UPDATE ON meeting
+FOR EACH ROW
+WHEN (
+    EXISTS (
+        SELECT *
+        FROM NEW nm, OLD om, section s1, section s2
+        WHERE s1.fac_id = s2.fac_id AND s1.section_id <> s2.section_id AND s1.section_id = nm.section_id AND s2.section_id = om.section_id AND CAST(nm.start_time AS Time) < CAST(om.end_time AS Time) AND CAST(nm.end_time AS Time) > CAST(om.start_time AS Time) AND nm.day = om.day
+    )
+)
+BEGIN
+raiseerror('Cannot update/insert meeting!')
+rollback transaction
+END
 
 Part5
 1. precomputation
@@ -88,7 +147,4 @@ WHERE course_id IN (
     FROM section se
     WHERE se.section_id = ?
     ) AND grade = substring(? from 1 for 1)
-
-
-
 
