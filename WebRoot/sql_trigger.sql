@@ -17,7 +17,7 @@ END
 
 
 2. enrollment_limit
-CREATE TRIGGER tgr2
+CREATE TRIGGER tgr2_1
 BEFORE INSERT OR UPDATE ON student_section
 FOR EACH ROW
 WHEN (
@@ -32,10 +32,28 @@ WHEN (
     )
 )
 BEGIN
-raiseerror('Out of Limit!')
+raiseerror('Out of Limit! Fail to update/insert student section.')
 rollback transaction
 END
 
+CREATE TRIGGER tgr2_2
+BEFORE INSERT OR UPDATE ON section
+FOR EACH ROW
+WHEN (
+    EXISTS (
+        SELECT *
+        FROM NEW se
+        WHERE se.limit < (
+            SELECT count(*)
+            FROM student_section n
+            WHERE n.section_id = se.section_id
+            )
+    )
+)
+BEGIN
+raiseerror('Out of Limit! Fail to update section limit.')
+rollback transaction
+END
 
 3. professor_conflict
 CREATE TRIGGER tgr3_1
