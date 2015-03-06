@@ -1,17 +1,23 @@
 Part4
 1. meeting_conflict
+
+
 2. enrollment_limit
+
+
 3. professor_conflict
+
+
 
 Part5
 1. precomputation
 a.
 -- create view
-CREATE VIEW CPQG AS
-SELECT cl.course_id, se.fac_id, cl.year, cl.quarter, substring(ss.grade from 1 for 1) AS grade, count(*) AS g_cnt
-FROM class cl, section se, student_section ss
-WHERE cl.class_id = se.class_id AND se.section_id = ss.section_id AND ss.grade <> 'f' AND ss.grade <> 'na'
-GROUP BY cl.course_id, se.fac_id, cl.year, cl.quarter, substring(ss.grade from 1 for 1)
+-- CREATE VIEW CPQG AS
+-- SELECT cl.course_id, se.fac_id, cl.year, cl.quarter, substring(ss.grade from 1 for 1) AS grade, count(*) AS g_cnt
+-- FROM class cl, section se, student_section ss
+-- WHERE cl.class_id = se.class_id AND se.section_id = ss.section_id AND ss.grade <> 'f' AND ss.grade <> 'na'
+-- GROUP BY cl.course_id, se.fac_id, cl.year, cl.quarter, substring(ss.grade from 1 for 1)
 
 -- version 2
 CREATE VIEW CPQG AS
@@ -47,41 +53,41 @@ FROM CPG AS c
 WHERE c.course_id = ? AND c.fac_id = ?
 
 2. maintain_view_trigger
--- UPDATE EMPLOYEE
--- SET SALARY = SALARY *1.1
--- WHERE DNO IN
---   (SELECT DNUMBER
---      FROM DEPARTMENT
---      WHERE DNAME='Research')
-
 -- update view after new row stu_section
 -- trigger after
 -- CPQG
 UPDATE CPQG
 SET g_cnt = g_cnt + 1
-WHERE course_id = (
+WHERE course_id IN (
     SELECT cl.course_id
-    FROM student_section ss, section se, class cl
-    WHERE ss.stu_id = ? AND ss.section_id = ? AND ss.section_id = se.section_id AND se.class_id = cl.class_id AND cl.year = ? AND cl.quarter = ?
-    ) AND grade = (
-    SELECT substring(ss.grade from 1 for 1)
-    FROM student_section ss, section se, class cl
-    WHERE ss.stu_id = ? AND ss.section_id = ? AND ss.section_id = se.section_id AND se.class_id = cl.class_id AND cl.year = ? AND cl.quarter = ?
+    FROM section se, class cl
+    WHERE se.section_id = ? AND se.class_id = cl.class_id
+    ) AND fac_id IN (
+    SELECT se.fac_id
+    FROM section se
+    WHERE se.section_id = ?
+    ) AND grade = substring(? from 1 for 1) AND year IN (
+    SELECT cl.year
+    FROM section se, class cl
+    WHERE se.section_id = ? AND se.class_id = cl.class_id
+    ) AND quarter IN (
+    SELECT cl.quarter
+    FROM section se, class cl
+    WHERE se.section_id = ? AND se.class_id = cl.class_id
     )
 
 -- CPG
 UPDATE CPG
 SET g_cnt = g_cnt + 1
-WHERE course_id = (
+WHERE course_id IN (
     SELECT cl.course_id
-    FROM student_section ss, section se, class cl
-    WHERE ss.stu_id = ? AND ss.section_id = ? AND ss.section_id = se.section_id AND se.class_id = cl.class_id
-    ) AND grade = (
-    SELECT substring(ss.grade from 1 for 1)
-    FROM student_section ss, section se, class cl
-    WHERE ss.stu_id = ? AND ss.section_id = ? AND ss.section_id = se.section_id AND se.class_id = cl.class_id
-    )
-
+    FROM section se, class cl
+    WHERE se.section_id = ? AND se.class_id = cl.class_id
+    ) AND fac_id IN (
+    SELECT se.fac_id
+    FROM section se
+    WHERE se.section_id = ?
+    ) AND grade = substring(? from 1 for 1)
 
 
 
