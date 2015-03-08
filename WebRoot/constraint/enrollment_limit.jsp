@@ -162,7 +162,7 @@
 //                rs = statement.executeQuery("SELECT * FROM student_section WHERE year = 2015 AND quarter = 'winter' ORDER BY ss_id");
                 rs = statement.executeQuery("SELECT * FROM student_section ss, section s, class c WHERE year = 2009 AND quarter = 'SPRING' AND ss.section_id = s.section_id AND s.class_id = c.class_id ORDER BY ss_id");
             %>
-
+            <a href="../main_form/section_entry_form.jsp">Section Entry Form</a>
             <h4>Insert</h4>
             <!-- Add an HTML table header row to format the results -->
             <table border="1">

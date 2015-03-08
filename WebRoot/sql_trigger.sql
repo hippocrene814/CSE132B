@@ -18,6 +18,7 @@ EXECUTE PROCEDURE emp_stamp();
 DROP TRIGGER ra_trigger
 ON research_area
 
+PART4
 1. meeting_conflict
 -- when meeting update or insert: same day, time overlap
 CREATE OR REPLACE FUNCTION check_meeting() RETURNS trigger AS
@@ -35,12 +36,12 @@ $body$
 $body$
 LANGUAGE plpgsql;
 
-CREATE TRIGGER check_meeting_trigger
+CREATE TRIGGER trg1
 BEFORE INSERT OR UPDATE ON meeting
 FOR EACH ROW
 EXECUTE PROCEDURE check_meeting();
 
-DROP TRIGGER check_meeting_trigger
+DROP TRIGGER trg1
 ON meeting
 
 2. enrollment_limit
@@ -98,39 +99,58 @@ DROP TRIGGER tgr2_2
 ON section
 
 3. professor_conflict
+-- update/insert section
+-- update/insert meeting
+CREATE OR REPLACE FUNCTION check_sm() RETURNS trigger AS
+$body$
+    BEGIN
+        IF EXISTS (
+            SELECT *
+            FROM section o, meeting m1, meeting m2
+            WHERE NEW.fac_id = o.fac_id AND NEW.section_id <> o.section_id AND m1.section_id = NEW.section_id AND m2.section_id = o.section_id
+                AND CAST(m1.start_time AS Time) < CAST(m2.end_time AS Time) AND CAST(m1.end_time AS Time) > CAST(m2.start_time AS Time) AND m1.day = m2.day
+        )
+        THEN RAISE EXCEPTION 'Cannot update/insert section because of time of faculty conflict!';
+        END IF;
+        RETURN NEW;
+    END;
+$body$
+LANGUAGE plpgsql;
+
 CREATE TRIGGER tgr3_1
 BEFORE INSERT OR UPDATE ON section
 FOR EACH ROW
-WHEN (
-    EXISTS (
-        SELECT *
-        FROM NEW n, OLD o, meeting m1, meeting m2
-        WHERE n.fac_id = o.fac_id AND n.section_id <> o.section_id AND m1.section_id = n.section_id AND m2.section_id = o.section_id
-            AND CAST(m1.start_time AS Time) < CAST(m2.end_time AS Time) AND CAST(m1.end_time AS Time) > CAST(m2.start_time AS Time) AND m1.day = m2.day
-    )
-)
-BEGIN
-raiseerror('Cannot update/insert section!')
-rollback transaction
-END
+EXECUTE PROCEDURE check_sm();
+
+DROP TRIGGER tgr3_1
+ON section
+
+--
+CREATE OR REPLACE FUNCTION check_ms() RETURNS trigger AS
+$body$
+    BEGIN
+        IF EXISTS (
+            SELECT *
+            FROM meeting om, section s1, section s2
+            WHERE s1.fac_id = s2.fac_id AND s1.section_id <> s2.section_id AND s1.section_id = NEW.section_id AND s2.section_id = om.section_id
+                AND CAST(NEW.start_time AS Time) < CAST(om.end_time AS Time) AND CAST(NEW.end_time AS Time) > CAST(om.start_time AS Time) AND NEW.day = om.day
+        )
+        THEN RAISE EXCEPTION 'Cannot update/insert meeting because of time of faculty conflict!!';
+        END IF;
+        RETURN NEW;
+    END;
+$body$
+LANGUAGE plpgsql;
 
 CREATE TRIGGER tgr3_2
 BEFORE INSERT OR UPDATE ON meeting
 FOR EACH ROW
-WHEN (
-    EXISTS (
-        SELECT *
-        FROM NEW nm, OLD om, section s1, section s2
-        WHERE s1.fac_id = s2.fac_id AND s1.section_id <> s2.section_id AND s1.section_id = nm.section_id AND s2.section_id = om.section_id
-            AND CAST(nm.start_time AS Time) < CAST(om.end_time AS Time) AND CAST(nm.end_time AS Time) > CAST(om.start_time AS Time) AND nm.day = om.day
-    )
-)
-BEGIN
-raiseerror('Cannot update/insert meeting!')
-rollback transaction
-END
+EXECUTE PROCEDURE check_ms();
 
-Part5
+DROP TRIGGER tgr3_2
+ON meeting
+
+PART5
 1. precomputation
 a.
 -- create view

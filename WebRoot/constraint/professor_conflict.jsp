@@ -110,6 +110,7 @@
                 rs = statement.executeQuery("SELECT * FROM section s, class c WHERE s.class_id = c.class_id ORDER BY section_id");
             %>
 
+            <a href="../extra_form/meeting_entry_form.jsp">Meeting Entry Form</a>
             <h4>Insert</h4>
             <!-- Add an HTML table header row to format the results -->
             <table border="1">
