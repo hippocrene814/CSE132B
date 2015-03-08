@@ -43,7 +43,7 @@
 
                     pstmt.setString(1, request.getParameter("research_name"));
                     int rowCount = pstmt.executeUpdate();
-
+                    System.out.println("name : " + request.getParameter("research_name"));
                     // Commit transaction
                     conn.commit();
                     conn.setAutoCommit(true);

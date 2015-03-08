@@ -1,59 +1,101 @@
-Part4
-1. meeting_conflict
-CREATE TRIGGER tgr1
-BEFORE INSERT OR UPDATE OR DELETE ON meeting
-FOR EACH ROW
-WHEN (
-    EXISTS (
-        SELECT *
-        FROM NEW n, OLD m
-        WHERE m.section_id = n.section_id AND m.meeting_id <> n.meeting_id AND CAST(m.start_time AS Time) < CAST(n.end_time AS Time) AND CAST(m.end_time AS Time) > CAST(n.start_time AS Time) AND m.day = n.day
-    )
-)
-BEGIN
-raiseerror('Meeting Conflict!')
-rollback transaction
-END
+-- test
+CREATE OR REPLACE FUNCTION emp_stamp() RETURNS trigger AS
+$body$
+    BEGIN
+        IF NEW.research_name = 'good' THEN
+            RAISE EXCEPTION 'research_name cannot be good';
+        END IF;
+        RETURN NEW;
+    END;
+$body$
+LANGUAGE plpgsql;
 
+CREATE TRIGGER ra_trigger
+BEFORE INSERT OR UPDATE ON research_area
+FOR EACH ROW
+EXECUTE PROCEDURE emp_stamp();
+
+DROP TRIGGER ra_trigger
+ON research_area
+
+1. meeting_conflict
+-- when meeting update or insert: same day, time overlap
+CREATE OR REPLACE FUNCTION check_meeting() RETURNS trigger AS
+$body$
+    BEGIN
+        IF EXISTS (
+            SELECT *
+            FROM meeting m
+            WHERE m.section_id = NEW.section_id AND m.meeting_id <> NEW.meeting_id AND CAST(m.start_time AS Time) < CAST(NEW.end_time AS Time) AND CAST(m.end_time AS Time) > CAST(NEW.start_time AS Time) AND m.day = NEW.day
+            )
+        THEN RAISE EXCEPTION 'Meeting Conflict';
+        END IF;
+        RETURN NEW;
+    END;
+$body$
+LANGUAGE plpgsql;
+
+CREATE TRIGGER check_meeting_trigger
+BEFORE INSERT OR UPDATE ON meeting
+FOR EACH ROW
+EXECUTE PROCEDURE check_meeting();
+
+DROP TRIGGER check_meeting_trigger
+ON meeting
 
 2. enrollment_limit
+-- when student_section insert, update: count(*) > limit
+-- when limit update: limit < count(*)
+CREATE OR REPLACE FUNCTION check_ss() RETURNS trigger AS
+$body$
+    BEGIN
+        IF EXISTS (
+        SELECT *
+        FROM section se
+        WHERE se.section_limit = (
+            SELECT count(*)
+            FROM student_section ss
+            WHERE NEW.section_id = se.section_id AND ss.section_id = se.section_id
+            )
+        )
+        THEN RAISE EXCEPTION 'Out of Limit! Fail to update/insert student section.';
+        END IF;
+        RETURN NEW;
+    END;
+$body$
+LANGUAGE plpgsql;
+
 CREATE TRIGGER tgr2_1
 BEFORE INSERT OR UPDATE ON student_section
 FOR EACH ROW
-WHEN (
-    EXISTS (
-        SELECT *
-        FROM section se
-        WHERE se.limit < (
+EXECUTE PROCEDURE check_ss();
+
+DROP TRIGGER tgr2_1
+ON student_section
+
+--
+CREATE OR REPLACE FUNCTION check_se() RETURNS trigger AS
+$body$
+    BEGIN
+        IF NEW.section_limit < (
             SELECT count(*)
-            FROM NEW n
-            WHERE n.section_id = se.section_id
-            )
-    )
-)
-BEGIN
-raiseerror('Out of Limit! Fail to update/insert student section.')
-rollback transaction
-END
+            FROM student_section ss
+            WHERE ss.section_id = NEW.section_id
+        )
+        THEN RAISE EXCEPTION 'Out of Limit! Fail to update section limit.';
+        END IF;
+        RETURN NEW;
+    END;
+$body$
+LANGUAGE plpgsql;
 
 CREATE TRIGGER tgr2_2
-BEFORE INSERT OR UPDATE ON section
+BEFORE UPDATE ON section
 FOR EACH ROW
-WHEN (
-    EXISTS (
-        SELECT *
-        FROM NEW se
-        WHERE se.limit < (
-            SELECT count(*)
-            FROM student_section n
-            WHERE n.section_id = se.section_id
-            )
-    )
-)
-BEGIN
-raiseerror('Out of Limit! Fail to update section limit.')
-rollback transaction
-END
+EXECUTE PROCEDURE check_se();
+
+DROP TRIGGER tgr2_2
+ON section
 
 3. professor_conflict
 CREATE TRIGGER tgr3_1
