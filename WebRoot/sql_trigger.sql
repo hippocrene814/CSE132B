@@ -74,15 +74,26 @@ DROP TRIGGER tgr2_1
 ON student_section
 
 -- when limit update in section: limit < count(*)
+-- and check delete in section (which is related to student_section)
 CREATE OR REPLACE FUNCTION check_se() RETURNS trigger AS
 $body$
     BEGIN
-        IF NEW.section_limit < (
-            SELECT count(*)
-            FROM student_section ss
-            WHERE ss.section_id = NEW.section_id
-        )
-        THEN RAISE EXCEPTION 'Out of Limit! Fail to update section limit.';
+        IF ( TG_OP='UPDATE' ) THEN
+            IF NEW.section_limit < (
+                SELECT count(*)
+                FROM student_section ss
+                WHERE ss.section_id = NEW.section_id
+            )
+            THEN RAISE EXCEPTION 'Out of Limit! Fail to update section limit.';
+            END IF;
+        ELSE
+            IF EXISTS (
+                SELECT *
+                FROM student_section ss
+                WHERE ss.section_id = OLD.section_id
+            )
+            THEN RAISE EXCEPTION 'Out of Limit! Fail to delete section because it is related to student.';
+            END IF;
         END IF;
         RETURN NEW;
     END;
@@ -90,7 +101,7 @@ $body$
 LANGUAGE plpgsql;
 
 CREATE TRIGGER tgr2_2
-BEFORE UPDATE ON section
+BEFORE UPDATE OR DELETE ON section
 FOR EACH ROW
 EXECUTE PROCEDURE check_se();
 
