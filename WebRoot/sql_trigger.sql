@@ -46,7 +46,6 @@ ON meeting
 
 2. enrollment_limit
 -- when student_section insert, update: count(*) > limit
--- when limit update: limit < count(*)
 CREATE OR REPLACE FUNCTION check_ss() RETURNS trigger AS
 $body$
     BEGIN
@@ -74,7 +73,7 @@ EXECUTE PROCEDURE check_ss();
 DROP TRIGGER tgr2_1
 ON student_section
 
---
+-- when limit update in section: limit < count(*)
 CREATE OR REPLACE FUNCTION check_se() RETURNS trigger AS
 $body$
     BEGIN
@@ -100,7 +99,6 @@ ON section
 
 3. professor_conflict
 -- update/insert section
--- update/insert meeting
 CREATE OR REPLACE FUNCTION check_sm() RETURNS trigger AS
 $body$
     BEGIN
@@ -125,7 +123,7 @@ EXECUTE PROCEDURE check_sm();
 DROP TRIGGER tgr3_1
 ON section
 
---
+-- update/insert meeting
 CREATE OR REPLACE FUNCTION check_ms() RETURNS trigger AS
 $body$
     BEGIN
@@ -153,13 +151,6 @@ ON meeting
 PART5
 1. precomputation
 a.
--- create view
--- CREATE VIEW CPQG AS
--- SELECT cl.course_id, se.fac_id, cl.year, cl.quarter, substring(ss.grade from 1 for 1) AS grade, count(*) AS g_cnt
--- FROM class cl, section se, student_section ss
--- WHERE cl.class_id = se.class_id AND se.section_id = ss.section_id AND ss.grade <> 'f' AND ss.grade <> 'na'
--- GROUP BY cl.course_id, se.fac_id, cl.year, cl.quarter, substring(ss.grade from 1 for 1)
-
 -- version 2
 CREATE VIEW CPQG AS
 SELECT cog.course_id, cog.year, cog.quarter, cog.fac_id, cog.grade, CASE WHEN grade_stat.g_cnt IS NULL THEN 0 ELSE grade_stat.g_cnt END
@@ -195,38 +186,147 @@ WHERE c.course_id = ? AND c.fac_id = ?
 
 2. maintain_view_trigger
 -- update view after new row stu_section
--- trigger after
--- CPQG
-UPDATE CPQG
-SET g_cnt = g_cnt + 1
-WHERE course_id IN (
-    SELECT cl.course_id
-    FROM section se, class cl
-    WHERE se.section_id = ? AND se.class_id = cl.class_id
-    ) AND fac_id IN (
-    SELECT se.fac_id
-    FROM section se
-    WHERE se.section_id = ?
-    ) AND grade = substring(? from 1 for 1) AND year IN (
-    SELECT cl.year
-    FROM section se, class cl
-    WHERE se.section_id = ? AND se.class_id = cl.class_id
-    ) AND quarter IN (
-    SELECT cl.quarter
-    FROM section se, class cl
-    WHERE se.section_id = ? AND se.class_id = cl.class_id
-    )
+-- cpqg
+CREATE OR REPLACE FUNCTION update_cpqg() RETURNS trigger AS
+$body$
+    BEGIN
+        -- IF NEW.grade <> 'f' AND NEW.grade <> 'na'
+        -- THEN
+            IF( TG_OP='DELETE' ) THEN
+                UPDATE CPQG
+                SET g_cnt = g_cnt - 1
+                WHERE course_id IN (
+                    SELECT cl.course_id
+                    FROM section se, class cl
+                    WHERE se.section_id = OLD.section_id AND se.class_id = cl.class_id
+                    ) AND fac_id IN (
+                    SELECT se.fac_id
+                    FROM section se
+                    WHERE se.section_id = OLD.section_id
+                    ) AND grade = substring(OLD.grade from 1 for 1) AND year IN (
+                    SELECT cl.year
+                    FROM section se, class cl
+                    WHERE se.section_id = OLD.section_id AND se.class_id = cl.class_id
+                    ) AND quarter IN (
+                    SELECT cl.quarter
+                    FROM section se, class cl
+                    WHERE se.section_id = OLD.section_id AND se.class_id = cl.class_id
+                    );
+                UPDATE CPG
+                SET g_cnt = g_cnt - 1
+                WHERE course_id IN (
+                    SELECT cl.course_id
+                    FROM section se, class cl
+                    WHERE se.section_id = OLD.section_id AND se.class_id = cl.class_id
+                    ) AND fac_id IN (
+                    SELECT se.fac_id
+                    FROM section se
+                    WHERE se.section_id = OLD.section_id
+                    ) AND grade = substring(OLD.grade from 1 for 1);
+            ELSIF (TG_OP='INSERT') THEN
+                UPDATE CPQG
+                SET g_cnt = g_cnt + 1
+                WHERE course_id IN (
+                    SELECT cl.course_id
+                    FROM section se, class cl
+                    WHERE se.section_id = NEW.section_id AND se.class_id = cl.class_id
+                    ) AND fac_id IN (
+                    SELECT se.fac_id
+                    FROM section se
+                    WHERE se.section_id = NEW.section_id
+                    ) AND grade = substring(NEW.grade from 1 for 1) AND year IN (
+                    SELECT cl.year
+                    FROM section se, class cl
+                    WHERE se.section_id = NEW.section_id AND se.class_id = cl.class_id
+                    ) AND quarter IN (
+                    SELECT cl.quarter
+                    FROM section se, class cl
+                    WHERE se.section_id = NEW.section_id AND se.class_id = cl.class_id
+                    );
+                UPDATE CPG
+                SET g_cnt = g_cnt + 1
+                WHERE course_id IN (
+                    SELECT cl.course_id
+                    FROM section se, class cl
+                    WHERE se.section_id = NEW.section_id AND se.class_id = cl.class_id
+                    ) AND fac_id IN (
+                    SELECT se.fac_id
+                    FROM section se
+                    WHERE se.section_id = NEW.section_id
+                    ) AND grade = substring(NEW.grade from 1 for 1);
+            ELSE
+                UPDATE CPQG
+                SET g_cnt = g_cnt + 1
+                WHERE course_id IN (
+                    SELECT cl.course_id
+                    FROM section se, class cl
+                    WHERE se.section_id = NEW.section_id AND se.class_id = cl.class_id
+                    ) AND fac_id IN (
+                    SELECT se.fac_id
+                    FROM section se
+                    WHERE se.section_id = NEW.section_id
+                    ) AND grade = substring(NEW.grade from 1 for 1) AND year IN (
+                    SELECT cl.year
+                    FROM section se, class cl
+                    WHERE se.section_id = NEW.section_id AND se.class_id = cl.class_id
+                    ) AND quarter IN (
+                    SELECT cl.quarter
+                    FROM section se, class cl
+                    WHERE se.section_id = NEW.section_id AND se.class_id = cl.class_id
+                        );
+                UPDATE CPQG
+                SET g_cnt = g_cnt - 1
+                WHERE course_id IN (
+                    SELECT cl.course_id
+                    FROM section se, class cl
+                    WHERE se.section_id = OLD.section_id AND se.class_id = cl.class_id
+                    ) AND fac_id IN (
+                    SELECT se.fac_id
+                    FROM section se
+                    WHERE se.section_id = OLD.section_id
+                    ) AND grade = substring(OLD.grade from 1 for 1) AND year IN (
+                    SELECT cl.year
+                    FROM section se, class cl
+                    WHERE se.section_id = OLD.section_id AND se.class_id = cl.class_id
+                    ) AND quarter IN (
+                    SELECT cl.quarter
+                    FROM section se, class cl
+                    WHERE se.section_id = OLD.section_id AND se.class_id = cl.class_id
+                    );
+                UPDATE CPG
+                SET g_cnt = g_cnt - 1
+                WHERE course_id IN (
+                    SELECT cl.course_id
+                    FROM section se, class cl
+                    WHERE se.section_id = OLD.section_id AND se.class_id = cl.class_id
+                    ) AND fac_id IN (
+                    SELECT se.fac_id
+                    FROM section se
+                    WHERE se.section_id = OLD.section_id
+                    ) AND grade = substring(OLD.grade from 1 for 1);
+                UPDATE CPG
+                SET g_cnt = g_cnt + 1
+                WHERE course_id IN (
+                    SELECT cl.course_id
+                    FROM section se, class cl
+                    WHERE se.section_id = NEW.section_id AND se.class_id = cl.class_id
+                    ) AND fac_id IN (
+                    SELECT se.fac_id
+                    FROM section se
+                    WHERE se.section_id = NEW.section_id
+                    ) AND grade = substring(NEW.grade from 1 for 1);
+            END IF;
+        -- END IF;
+        RETURN NEW;
+    END;
+$body$
+LANGUAGE plpgsql;
 
--- CPG
-UPDATE CPG
-SET g_cnt = g_cnt + 1
-WHERE course_id IN (
-    SELECT cl.course_id
-    FROM section se, class cl
-    WHERE se.section_id = ? AND se.class_id = cl.class_id
-    ) AND fac_id IN (
-    SELECT se.fac_id
-    FROM section se
-    WHERE se.section_id = ?
-    ) AND grade = substring(? from 1 for 1)
+CREATE TRIGGER tgr4_1
+AFTER INSERT OR UPDATE OR DELETE ON student_section
+FOR EACH ROW
+EXECUTE PROCEDURE update_cpqg();
+
+DROP TRIGGER tgr4_1
+ON student_section
 
