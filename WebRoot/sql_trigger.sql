@@ -199,7 +199,7 @@ PART5
 1. precomputation
 a.
 -- version 2
-CREATE VIEW CPQG AS
+CREATE TABLE CPQG AS
 SELECT cog.course_id, cog.year, cog.quarter, cog.fac_id, cog.grade, CASE WHEN grade_stat.g_cnt IS NULL THEN 0 ELSE grade_stat.g_cnt END
 FROM (SELECT DISTINCT co.course_id, cl.year, cl.quarter, se.fac_id, ga.grade FROM course co, grade_abcd ga, class cl, section se WHERE cl.course_id = co.course_id AND se.class_id = cl.class_id) AS cog LEFT OUTER JOIN
     (SELECT res.course_id, res.year, res.quarter, res.fac_id, res.grade, CASE WHEN res.g_cnt IS NULL THEN 0 ELSE res.g_cnt END
@@ -219,9 +219,11 @@ SELECT c.grade, c.g_cnt
 FROM CPQG AS c
 WHERE c.course_id = ? AND c.fac_id = ? AND c.year = ? AND c.quarter = ?
 
+DROP TABLE CPQG
+
 b.
 -- create view
-CREATE VIEW CPG AS
+CREATE TABLE CPG AS
 SELECT CPQG.course_id, CPQG.fac_id, CPQG.grade, SUM(CPQG.g_cnt) AS g_cnt
 FROM CPQG
 GROUP BY CPQG.course_id, CPQG.fac_id, CPQG.grade
@@ -230,6 +232,8 @@ GROUP BY CPQG.course_id, CPQG.fac_id, CPQG.grade
 SELECT c.grade, c.g_cnt
 FROM CPG AS c
 WHERE c.course_id = ? AND c.fac_id = ?
+
+DROP TABLE CPG
 
 2. maintain_view_trigger
 -- update view after new row stu_section
