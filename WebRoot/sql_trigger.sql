@@ -30,6 +30,7 @@ $body$
             WHERE m.section_id = NEW.section_id AND m.meeting_id <> NEW.meeting_id AND CAST(m.start_time AS Time) < CAST(NEW.end_time AS Time) AND CAST(m.end_time AS Time) > CAST(NEW.start_time AS Time) AND m.day = NEW.day
             )
         THEN RAISE EXCEPTION 'Meeting Conflict';
+        -- THEN RAISE EXCEPTION 'Error1: Meeting Conflict, with Section Id % .', NEW.section_id;
         END IF;
         RETURN NEW;
     END;
@@ -79,6 +80,7 @@ $body$
                 ) AND NEW.section_id <> OLD.section_id
             )
             THEN RAISE EXCEPTION 'Out of Limit! Fail to update student section.';
+            -- THEN RAISE EXCEPTION 'Error2: Out of Limit! Fail to update student section.';
             END IF;
         ELSE
             IF EXISTS (
@@ -91,6 +93,7 @@ $body$
                 )
             )
             THEN RAISE EXCEPTION 'Out of Limit! Fail to insert student section.';
+            -- THEN RAISE EXCEPTION 'Error2: Out of Limit! Fail to insert student section.';
             END IF;
         END IF;
         RETURN NEW;
@@ -118,6 +121,7 @@ $body$
                 WHERE ss.section_id = NEW.section_id
             )
             THEN RAISE EXCEPTION 'Out of Limit! Fail to update section limit.';
+            -- THEN RAISE EXCEPTION 'Error2: Out of Limit! Fail to update section limit.';
             END IF;
         ELSE
             IF EXISTS (
@@ -126,6 +130,7 @@ $body$
                 WHERE ss.section_id = OLD.section_id
             )
             THEN RAISE EXCEPTION 'Out of Limit! Fail to delete section because it is related to student.';
+            -- THEN RAISE EXCEPTION 'Error2: Fail to delete section because it is related to student.';
             END IF;
         END IF;
         RETURN NEW;
@@ -153,6 +158,7 @@ $body$
                 AND CAST(m1.start_time AS Time) < CAST(m2.end_time AS Time) AND CAST(m1.end_time AS Time) > CAST(m2.start_time AS Time) AND m1.day = m2.day
         )
         THEN RAISE EXCEPTION 'Cannot update/insert section because of time of faculty conflict!';
+        -- THEN RAISE EXCEPTION 'Error3: Cannot update/insert section because of time of faculty conflict!';
         END IF;
         RETURN NEW;
     END;
@@ -178,6 +184,7 @@ $body$
                 AND CAST(NEW.start_time AS Time) < CAST(om.end_time AS Time) AND CAST(NEW.end_time AS Time) > CAST(om.start_time AS Time) AND NEW.day = om.day
         )
         THEN RAISE EXCEPTION 'Cannot update/insert meeting because of time of faculty conflict!!';
+        -- THEN RAISE EXCEPTION 'Error3: Cannot update/insert meeting because of time of faculty conflict!';
         END IF;
         RETURN NEW;
     END;
