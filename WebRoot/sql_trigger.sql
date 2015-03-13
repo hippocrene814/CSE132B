@@ -46,19 +46,52 @@ ON meeting
 
 2. enrollment_limit
 -- when student_section insert, update: count(*) > limit
+-- CREATE OR REPLACE FUNCTION check_ss() RETURNS trigger AS
+-- $body$
+--     BEGIN
+--         IF EXISTS (
+--         SELECT *
+--         FROM section se
+--         WHERE se.section_limit = (
+--             SELECT count(*)
+--             FROM student_section ss
+--             WHERE NEW.section_id = se.section_id AND ss.section_id = se.section_id
+--             )
+--         )
+--         THEN RAISE EXCEPTION 'Out of Limit! Fail to update/insert student section.';
+--         END IF;
+--         RETURN NEW;
+--     END;
+-- $body$
+-- LANGUAGE plpgsql;
+
 CREATE OR REPLACE FUNCTION check_ss() RETURNS trigger AS
 $body$
     BEGIN
-        IF EXISTS (
-        SELECT *
-        FROM section se
-        WHERE se.section_limit = (
-            SELECT count(*)
-            FROM student_section ss
-            WHERE NEW.section_id = se.section_id AND ss.section_id = se.section_id
+        IF ( TG_OP='UPDATE' ) THEN
+            IF EXISTS (
+            SELECT *
+            FROM section se
+            WHERE se.section_limit = (
+                SELECT count(*)
+                FROM student_section ss
+                WHERE NEW.section_id = se.section_id AND ss.section_id = se.section_id
+                ) AND NEW.section_id <> OLD.section_id
             )
-        )
-        THEN RAISE EXCEPTION 'Out of Limit! Fail to update/insert student section.';
+            THEN RAISE EXCEPTION 'Out of Limit! Fail to update student section.';
+            END IF;
+        ELSE
+            IF EXISTS (
+            SELECT *
+            FROM section se
+            WHERE se.section_limit = (
+                SELECT count(*)
+                FROM student_section ss
+                WHERE NEW.section_id = se.section_id AND ss.section_id = se.section_id
+                )
+            )
+            THEN RAISE EXCEPTION 'Out of Limit! Fail to insert student section.';
+            END IF;
         END IF;
         RETURN NEW;
     END;
